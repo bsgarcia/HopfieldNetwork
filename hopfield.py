@@ -1,5 +1,11 @@
 # -*- coding: utf-8 -*-
+###########################################
+#IMPLEMENTATION OF HOPFIELD NEURAL NETWORK#
+###########################################
+
 import numpy as np
+from PyQt4 import QtCore, QtGui
+
 
 class HopfieldNetwork(object):
 
@@ -7,6 +13,23 @@ class HopfieldNetwork(object):
         
         self.dataset = dataset
         self.lng = len(dataset[0])
+
+    
+    @staticmethod
+    def f1(resultat, *etat):
+        if resultat > 0:    return 1
+        else:   return -1
+    
+    @staticmethod
+    def f2(resultat, *etat):
+        if resultat >= 0:   return 1
+        else:   return -1
+   
+    @staticmethod
+    def f3(resultat, etat):
+        if resultat > 0:    return 1
+        elif resultat < 0:  return -1
+        else:   return etat
 
 
     def init_matrix(self):
@@ -39,20 +62,14 @@ class HopfieldNetwork(object):
             else: 
                 print('non stable', end='')
     
-    def f1(resultat):
-        if resultat > 0:    return 1
-        else:   return -1
-
-    def f2(resultat):
-        if resultat >= 0:   return 1
-        else:   return -1
-
-    def f3(resultat, etat):
-        if resultat > 0:    return 1
-        elif resultat < 0:  return -1
-        else:   return etat
-
-
+    def print_matrix(self):
+        self.tableView.setRowCount(len(matrix))
+        self.tableView.setColumnCount(len(matrix[0]))
+        for i,row in enumerate(matrix):
+            for j,val in enumerate(row):
+                self.tableView.setItem(i,j,QtGui.QTableWidgetItem(str(val)))
+    
+    
 class Launcher(object):
     
     @staticmethod
@@ -129,6 +146,9 @@ class Launcher(object):
                 -1,-1,1,-1,-1,-1]
         
         datas = [zero, un, deux, trois, quatre, cinq, six, sept, huit, neuf] 
+        
+
+        np.random.choice(datas)
         
         net = HopfieldNetwork(datas)
         matrix = net.init_matrix()
