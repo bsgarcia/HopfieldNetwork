@@ -7,12 +7,44 @@ import graphics
 
 
 class HopfieldNetwork(object):
+    """Hopfield neural network class"""
 
     def __init__(self, dataset):
-        
         self.dataset = dataset
         self.lng = len(dataset[0])
 
+   
+    def init_matrix(self):
+        """matrix initialisation"""
+        
+        matrix = np.zeros( (self.lng, self.lng))
+
+        for data in self.dataset:
+            z = np.array(data).reshape(1, self.lng)
+            matrix += z * z.T
+            print("_"*5, data, "_"*5)
+            print(matrix)
+
+        matrix /= self.lng
+        print("="*5, "final", "="*5)
+        print(matrix)
+        
+        return matrix 
+    
+    def check_stability(self, matrix):
+        """prints current system's state"""
+
+        for data in self.dataset:
+            inputs = np.array(data)
+            outputs = np.dot(inputs, matrix)
+            print("input", inputs, end=',')
+            print("sortie", np.sign(outputs), end=',')
+            
+            if np.all(np.sign(outputs) == np.sign(inputs)) : 
+                print('stable', end='\n')
+            else: 
+                print('non stable', end='\n')
+    
     @staticmethod
     def f1(resultat, *etat):
         
@@ -33,45 +65,14 @@ class HopfieldNetwork(object):
         else:   return etat
 
 
-    def init_matrix(self):
-        """matrix initialisation"""
-        
-        matrix = np.zeros( (self.lng, self.lng))
-
-        for data in self.dataset:
-            z = np.array(data).reshape(1, self.lng)
-            matrix += z * z.T
-            print("_"*5, data, "_"*5)
-            print(matrix)
-
-        matrix /= self.lng
-        print("="*5, "final", "="*5)
-        print(matrix)
-        
-        return matrix 
-    
-    def presentation(self, matrix):
-        
-        for data in self.dataset:
-            inputs = np.array(data)
-            outputs = np.dot(inputs, matrix)
-            print("input", inputs, end=',')
-            print("sortie", np.sign(outputs), end=',')
-            
-            if np.all(np.sign(outputs) == np.sign(inputs)) : 
-                print('stable', end='')
-            else: 
-                print('non stable', end='')
-           
-
 #--------------------------------------------------------------------------#
 
 class Launcher(object):
     
-    @classmethod
-    def main(cls):
+    @staticmethod
+    def main():
         
-        matrix_dict = cls.define_datas_to_learn()
+        matrix_dict = Launcher.define_datas_to_learn()
         datas = []
         
         for key in range(len(matrix_dict)):
@@ -79,7 +80,7 @@ class Launcher(object):
         
         net = HopfieldNetwork(datas)
         matrix = net.init_matrix()
-        net.presentation(matrix)
+        net.check_stability(matrix)
         graphics.run(datas)
 
     @staticmethod
