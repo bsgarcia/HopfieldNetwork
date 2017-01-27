@@ -5,6 +5,7 @@ from PyQt5.QtWidgets import (QWidget, QApplication, QTableWidget,
 from PyQt5.QtGui import QColor
 import numpy as np
 
+
 class Window(QWidget):
     def __init__(self, rows, columns, datas):
         super(Window, self).__init__()
@@ -13,9 +14,8 @@ class Window(QWidget):
         self.item_list = []
         self.datas = datas
         self.table_size = 9
-        self.colors = {"blue" : QColor(0, 51, 51),
-                      "white" : QColor(255, 255, 255)
-                      }
+        self.colors = {"blue": QColor(0, 51, 51),
+                       "white": QColor(255, 255, 255)}
         
         layout = QGridLayout(self)
         
@@ -67,6 +67,7 @@ def run(datas):
    
     app = QApplication(sys.argv)
     window = Window(6, 6, datas)
+    window.setWindowTitle("Hopfield neural network")
     sys.exit(app.exec_())
 
 if __name__ == "__main__":
