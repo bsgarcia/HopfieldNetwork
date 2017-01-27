@@ -43,7 +43,7 @@ class Window(QWidget):
             
             self.text.append(QLabel(self))
             self.text[i].setGeometry(QRect(120,80,180,70))
-            self.text[i].setText(" Stability {}: {}".format(i, stability[i]))
+            self.text[i].setText(" Stability {}".format(stability[i]))
         
             layout.addWidget(self.table[i], coordinates[i][0],
                                             coordinates[i][1])
