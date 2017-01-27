@@ -1,8 +1,8 @@
+# -*- coding: utf8 -*-
 import sys
-from PyQt5 import QtGui, QtCore
 from PyQt5.QtWidgets import (QWidget, QApplication, QTableWidget,
-                                QTableWidgetItem, QGridLayout)
-import PyQt5.Qt
+                             QTableWidgetItem, QGridLayout)
+from PyQt5.QtGui import QColor
 import numpy as np
 
 class Window(QWidget):
@@ -13,13 +13,14 @@ class Window(QWidget):
         self.item_list = []
         self.datas = datas
         self.table_size = 9
-        self.colors = {"blue" : QtGui.QColor(0, 51, 51),
-                      "white" : QtGui.QColor(255, 255, 255)
+        self.colors = {"blue" : QColor(0, 51, 51),
+                      "white" : QColor(255, 255, 255)
                       }
         
         layout = QGridLayout(self)
-
-        for i in range(len(self.datas)):
+        
+        #fill layout with grids
+        for i in range(len(self.datas)):    
             self.table.append(QTableWidget(rows, columns, self))
             self.table[i].verticalHeader().setVisible(False)
             self.table[i].horizontalHeader().setVisible(False)
@@ -29,6 +30,7 @@ class Window(QWidget):
             for x in range(columns):
                 self.table[i].setColumnWidth(x, self.table_size)
             
+            #assign items to each cell (required to colorize them)
             for row in range(rows):
                 for column in range(columns):
                     item = QTableWidgetItem()
@@ -43,8 +45,11 @@ class Window(QWidget):
 
     def color_items(self, i, rows, columns):
         
+        #reshape vectors to make them fit to 
+        #QTable widgets (which are organized as matrices).
         matrix = np.reshape(self.datas[i], (rows, columns))
         
+        #find coordinates
         white = np.where(matrix == -1)  
         blue = np.where(matrix == 1)
         
@@ -65,7 +70,9 @@ def run(datas):
     sys.exit(app.exec_())
 
 if __name__ == "__main__":
-    main()
+    
+    test = [[ -1 for i in range(18)] + [ 1 for i in range(18)]]
+    run(test)
 
 
 
