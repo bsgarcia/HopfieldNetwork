@@ -33,7 +33,8 @@ class HopfieldNetwork(object):
     
     def check_stability(self, matrix):
         """prints current system's state"""
-
+        
+        stability_list = []
         for data in self.dataset:
             inputs = np.array(data)
             outputs = np.dot(inputs, matrix)
@@ -42,10 +43,12 @@ class HopfieldNetwork(object):
             
             if np.all(np.sign(outputs) == np.sign(inputs)) : 
                 print('stable', end='\n')
-                return True
+                stability_list.append(True)
             else: 
-                return False
                 print('non stable', end='\n')
+                stability_list.append(False)
+        
+        return stability_list
     
     @staticmethod
     def f1(resultat, *etat):

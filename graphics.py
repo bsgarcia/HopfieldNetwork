@@ -1,7 +1,7 @@
 # -*- coding: utf8 -*-
 import sys
 from PyQt5.QtWidgets import (QWidget, QApplication, QTableWidget,
-                             QTableWidgetItem, QGridLayout, QLabel)
+                             QTableWidgetItem, QLabel, QGridLayout, QHBoxLayout)
 from PyQt5.QtGui import QColor 
 from PyQt5.QtCore import QRect
 import numpy as np
@@ -13,16 +13,14 @@ class Window(QWidget):
         
         self.table = []
         self.item_list = []
+        self.text = []
         self.datas = datas
         self.table_size = 9
         self.colors = {"blue": QColor(0, 51, 51),
                        "white": QColor(255, 255, 255)}
         
-        self.text = QLabel(self)
-        self.text.setGeometry(QRect(120,80,180,70))
-        self.text.setText(" Stability: {}".format(stability))
-        
-        layout = QGridLayout(self)
+        layout = QGridLayout(self) 
+        coordinates = [(i,j) for i in range(2) for j in range(5)]
         
         #fill layout with grids
         for i in range(len(self.datas)):    
@@ -43,8 +41,16 @@ class Window(QWidget):
         
             self.color_items(i, rows, columns)
             
-            layout.addWidget(self.table[i])
-        layout.addWidget(self.text)    
+            self.text.append(QLabel(self))
+            self.text[i].setGeometry(QRect(120,80,180,70))
+            self.text[i].setText(" Stability {}: {}".format(i, stability[i]))
+        
+            layout.addWidget(self.table[i], coordinates[i][0],
+                                            coordinates[i][1])
+            layout.addWidget(self.text[i],  coordinates[i][0],
+                                            coordinates[i][1])
+
+    
         self.show()
 
 
@@ -78,7 +84,7 @@ def run(datas, stability):
 if __name__ == "__main__":
     
     test = [[ -1 for i in range(18)] + [ 1 for i in range(18)]]
-    run(datas=test, stability=True)
+    run(datas=test, stability=[True for i in range(len(test))])
 
 
 
