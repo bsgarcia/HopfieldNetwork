@@ -42,7 +42,9 @@ class HopfieldNetwork(object):
             
             if np.all(np.sign(outputs) == np.sign(inputs)) : 
                 print('stable', end='\n')
+                return True
             else: 
+                return False
                 print('non stable', end='\n')
     
     @staticmethod
@@ -80,8 +82,8 @@ class Launcher(object):
         
         net = HopfieldNetwork(datas)
         matrix = net.init_matrix()
-        net.check_stability(matrix)
-        graphics.run(datas)
+        stability = net.check_stability(matrix)
+        graphics.run(datas=datas, stability=stability)
 
     @staticmethod
     def define_datas_to_learn():

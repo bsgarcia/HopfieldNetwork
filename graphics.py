@@ -1,13 +1,14 @@
 # -*- coding: utf8 -*-
 import sys
 from PyQt5.QtWidgets import (QWidget, QApplication, QTableWidget,
-                             QTableWidgetItem, QGridLayout)
-from PyQt5.QtGui import QColor
+                             QTableWidgetItem, QGridLayout, QLabel)
+from PyQt5.QtGui import QColor 
+from PyQt5.QtCore import QRect
 import numpy as np
 
 
 class Window(QWidget):
-    def __init__(self, rows, columns, datas):
+    def __init__(self, rows, columns, stability, datas):
         super(Window, self).__init__()
         
         self.table = []
@@ -16,6 +17,10 @@ class Window(QWidget):
         self.table_size = 9
         self.colors = {"blue": QColor(0, 51, 51),
                        "white": QColor(255, 255, 255)}
+        
+        self.text = QLabel(self)
+        self.text.setGeometry(QRect(120,80,180,70))
+        self.text.setText(" Stability: {}".format(stability))
         
         layout = QGridLayout(self)
         
@@ -39,7 +44,7 @@ class Window(QWidget):
             self.color_items(i, rows, columns)
             
             layout.addWidget(self.table[i])
-            
+        layout.addWidget(self.text)    
         self.show()
 
 
@@ -63,17 +68,17 @@ class Window(QWidget):
 
 
 
-def run(datas):
-   
+def run(datas, stability):
+    
     app = QApplication(sys.argv)
-    window = Window(6, 6, datas)
+    window = Window(6, 6, stability=stability, datas=datas)
     window.setWindowTitle("Hopfield neural network")
     sys.exit(app.exec_())
 
 if __name__ == "__main__":
     
     test = [[ -1 for i in range(18)] + [ 1 for i in range(18)]]
-    run(test)
+    run(datas=test, stability=True)
 
 
 
