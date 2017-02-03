@@ -6,13 +6,24 @@ import numpy as np
 import graphics
 
 
+def f1(resultat, *etat):
+    return 1 if np.sum(resultat) > 0 else -1    
+
+def f2(resultat, *etat):
+    return 1 if np.sum(resultat) >= 0 else -1 
+    
+def f3(resultat, etat):
+    return 1 if np.sum(resultat) > 0 else -1 \
+    if np.sum(resultat) < 0 else etat    
+
+#--------------------------------------------------------------------------#
 class HopfieldNetwork(object):
     """Hopfield neural network class"""
 
-    def __init__(self, dataset):
+    def __init__(self, dataset, epochs=2):
         self.dataset = dataset
         self.lng = len(dataset[0])
-
+        self.epochs = epochs
    
     def init_matrix(self):
         """matrix initialisation"""
@@ -34,42 +45,27 @@ class HopfieldNetwork(object):
     def check_stability(self, matrix):
         """prints current system's state"""
         
-        stability_list = []
-        for data in self.dataset:
-            inputs = np.array(data)
-            outputs = np.dot(inputs, matrix)
-            print("input", inputs, end=',')
-            print("sortie", np.sign(outputs), end=',')
+        stable = np.zeros(len(self.dataset)) 
+        outputs_array = np.copy(self.dataset) 
+        
+        while not np.all(stable):
             
-            if np.all(np.sign(outputs) == np.sign(inputs)) : 
-                print('stable', end='\n')
-                stability_list.append(True)
-            else: 
-                print('non stable', end='\n')
-                stability_list.append(False)
+            for i, data in enumerate(outputs_array):
+                inputs = np.array(data)
+                outputs = np.dot(inputs, matrix)
+                
+                print("input", inputs, end=',')
+                print("sortie", np.sign(outputs), end=',')
+                
+                outputs_array[i] = np.sign(outputs) 
+                
+                if np.all(np.sign(outputs) == np.sign(inputs)) : 
+                    # print('stable', end='\n')
+                    stable[i]=True
+                else: 
+                    print('non stable', end='\n')
         
-        return stability_list
-    
-    @staticmethod
-    def f1(resultat, *etat):
-        
-        if resultat > 0:    return 1
-        else:   return -1
-    
-    @staticmethod
-    def f2(resultat, *etat):
-        
-        if resultat >= 0:   return 1
-        else:   return -1
-   
-    @staticmethod
-    def f3(resultat, etat):
-        
-        if resultat > 0:    return 1
-        elif resultat < 0:  return -1
-        else:   return etat
-
-
+        return (outputs_array, stable)
 #--------------------------------------------------------------------------#
 
 class Launcher(object):
@@ -85,8 +81,8 @@ class Launcher(object):
         
         net = HopfieldNetwork(datas)
         matrix = net.init_matrix()
-        stability = net.check_stability(matrix)
-        graphics.run(datas=datas, stability=stability)
+        result = net.check_stability(matrix)
+        graphics.run(datas=result[0], stability=result[1])
 
     @staticmethod
     def define_datas_to_learn():

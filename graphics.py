@@ -1,7 +1,7 @@
 # -*- coding: utf8 -*-
 import sys
 from PyQt5.QtWidgets import (QWidget, QApplication, QTableWidget,
-                             QTableWidgetItem, QLabel, QGridLayout, QHBoxLayout)
+                             QTableWidgetItem, QLabel, QGridLayout)
 from PyQt5.QtGui import QColor 
 from PyQt5.QtCore import QRect
 import numpy as np
@@ -43,22 +43,19 @@ class Window(QWidget):
             
             self.text.append(QLabel(self))
             self.text[i].setGeometry(QRect(120,80,180,70))
-            self.text[i].setText(" Stability: {}".format(stability[i]))
-
+            self.text[i].setText("Stability: {}".format(stability[i]))
         
             layout.addWidget(self.table[i], coordinates[i][0],
                                             coordinates[i][1])
             layout.addWidget(self.text[i],  coordinates[i][0],
                                             coordinates[i][1])
-
     
         self.show()
-
 
     def color_items(self, i, rows, columns):
         
         #reshape vectors to make them fit to 
-        #QTable widgets (which are organized as matrices).
+        #QTable widgets dimensions (which are organized as matrices).
         matrix = np.reshape(self.datas[i], (rows, columns))
         
         #find coordinates
@@ -73,7 +70,7 @@ class Window(QWidget):
             coordinates = (blue[0][j], blue[1][j])
             self.table[i].item(coordinates[0], coordinates[1]).setBackground(self.colors["blue"]) 
 
-
+#--------------------------------------------------------------------------------------------------#
 
 def run(datas, stability):
     
