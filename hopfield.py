@@ -2,9 +2,10 @@
 ###########################################
 #IMPLEMENTATION OF HOPFIELD NEURAL NETWORK#
 ###########################################
-import numpy as np
+from numbers_to_learn import numbers
 import graphics
 from convert import Converter
+import numpy as np
 from os import walk
 
 
@@ -33,7 +34,6 @@ class HopfieldNetwork(object):
    
     def init_weights_matrix(self):
         """weights matrix initialization"""
-        
         matrix = np.zeros((self.lng, self.lng))
         
         for data in self.dataset:
@@ -56,7 +56,6 @@ class HopfieldNetwork(object):
     
     def synchronous_presentation(self):
         """update network in a synchronous way"""
-        
         stable = np.zeros(len(self.dataset))
         outputs_array = np.copy(self.dataset) 
         t = 0
@@ -81,7 +80,6 @@ class HopfieldNetwork(object):
    
     def asynchronous_presentation(self):
         """update network in an asynchronous way"""
-        
         stable = np.zeros(len(self.dataset))
         outputs_array = np.copy(self.dataset) 
         t = 0
@@ -106,24 +104,24 @@ class HopfieldNetwork(object):
         return (outputs_array, stable)    
             
 
-#--------------------------||| Launcher|||---------------------------------------------------#
+#--------------------------||| Launcher|||--------------------------------------------#
 
 class Launcher(object):
     
     @staticmethod
     def main(mode=1, sync=1):
         
-        if mode == 1:
-            matrix_dict = Launcher.learn_numbers()
+        if mode:
+            
             datas = []
-        
-            for key in np.sort(list(matrix_dict.keys())):
-                datas.append(matrix_dict[key])
+            
+            for key in np.sort(list(numbers.keys())):
+                datas.append(numbers[key])
         
             net = HopfieldNetwork(datas)
             net.init_weights_matrix()
             
-            if sync == 1:
+            if sync:
                 result = net.synchronous_presentation()
             else:
                 result = net.asynchronous_presentation()
@@ -131,6 +129,7 @@ class Launcher(object):
             graphics.run(datas=result[0], stability=result[1])
 
         else:
+            
             datas = []
             
             for root, dirs, files in walk("./inputs_img/"):
@@ -142,100 +141,22 @@ class Launcher(object):
             net = HopfieldNetwork(datas)
             net.init_weights_matrix()
             
-            if sync == 1:
+            if sync:
                 result = net.synchronous_presentation()
             else:
                 result = net.asynchronous_presentation()
 
             Converter.array_to_img(result[0])
     
-    @staticmethod
-    def learn_numbers():
-
-        matrix_dict = { 
-                   
-                   0 : [-1,-1,1,1,-1,-1,
-                       -1,1,-1,-1,1,-1,
-                        1,-1,-1,-1,-1,1,
-                        1,-1,-1,-1,-1,1,
-                       -1,1,-1,-1,1,-1,
-                       -1,-1,1,1,-1,-1], 
-            
-                   1 : [-1,-1,-1,-1,1,-1,
-                        -1,-1,-1,1,1,-1,
-                        -1,-1,-1,-1,1,-1,
-                        -1,-1,-1,-1,1,-1,
-                        -1,-1,-1,-1,1,-1,
-                        -1,-1,-1,-1,1,-1],
-                   
-                   2 : [-1,-1,1,1,-1,-1,
-                        -1,1,-1,-1,1,-1,
-                        -1,-1,-1,-1,1,-1,
-                        -1,-1,-1,1,-1,-1,
-                        -1,-1,1,-1,-1,-1,
-                        -1,1,1,1,1,-1],
-                   
-                   3 : [-1,-1,1,1,-1,-1,
-                        -1,-1,-1,-1,1,-1,
-                        -1,-1,-1,1,1,-1,
-                        -1,-1,-1,1,1,-1,
-                        -1,-1,-1,-1,1,-1,
-                        -1,-1,1,1,-1,-1],
-
-                   4 : [-1,1,-1,-1,-1,-1,
-                        -1,1,-1,-1,-1,-1,
-                        -1,1,-1,1,-1,-1,
-                        -1,1,1,1,1,-1,
-                        -1,-1,-1,1,-1,-1,
-                        -1,-1,-1,1,-1,-1],
-
-                   5 : [-1,1,1,1,1,-1,
-                        -1,1,-1,-1,-1,-1,
-                        -1,1,-1,-1,-1,-1,
-                        -1,-1,1,1,-1,-1,
-                        -1,-1,-1,-1,1,-1,
-                        -1,1,1,1,-1,-1],
-
-                   6 : [-1,-1,1,1,-1,-1,
-                        -1,1,-1,-1,-1,-1,
-                        -1,1,-1,-1,-1,-1,
-                        -1,1,1,1,-1,-1,
-                        -1,1,-1,-1,1,-1,
-                        -1,-1,1,1,-1,-1],
-                 
-                    
-                   7 : [-1,1,1,1,1,1,
-                        -1,-1,-1,-1,-1,1,
-                        -1,-1,-1,-1,1,-1,
-                        -1,-1,-1,1,-1,-1,
-                        -1,-1,1,-1,-1,-1,
-                        -1,1,-1,-1,-1,-1],
-
-                   8 : [-1,1,1,1,1,-1,
-                        1,-1,-1,-1,-1,1,
-                        -1,1,-1,-1,1,-1,
-                        -1,1,-1,-1,1,-1,
-                        1,-1,-1,-1,-1,1,
-                        -1,1,1,1,1,-1],
-                
-                   9 : [-1,-1,1,1,-1,-1,
-                        -1,1,-1,-1,1,-1,
-                        -1,1,1,1,1,-1,
-                        -1,-1,-1,-1,1,-1,
-                        -1,-1,-1,1,-1,-1,
-                        -1,-1,1,-1,-1,-1]  }
-
-        return matrix_dict
-
-#-------------------------------------------------------------------------------------------#
+#------------------------------------------------------------------------------------#
 
 if __name__ == '__main__':
 
-    ask = int(input("What do you want to learn? images or numbers [0/1] > "))
+    mode= int(input("What do you want to learn? images or numbers [0/1] > "))
     sync = int(input("asynchronous or synchronous update? [0/1] > "))
     
-    if ask in [0, 1] and sync in [0, 1]:
-        Launcher.main(mode=ask, sync=sync)
+    if mode in [0, 1] and sync in [0, 1]:
+        Launcher.main(mode=mode, sync=sync)
     else:
         raise ValueError("wrong inputs, inputs are either 1 or 0")
         quit()
