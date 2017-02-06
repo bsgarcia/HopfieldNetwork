@@ -32,7 +32,7 @@ class HopfieldNetwork(object):
         self.w_matrix = None                    #weights matrices
    
     def init_weights_matrix(self):
-        """wheights matrix initialization"""
+        """weights matrix initialization"""
         
         matrix = np.zeros((self.lng, self.lng))
         
