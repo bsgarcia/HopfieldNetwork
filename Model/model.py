@@ -39,7 +39,7 @@ class Model():
         self.checkBox = None
         self.label = None
         self.label_2 = None
-        self.epochs = 1
+        self.epochs = 1 
         self.comboBox = None
         self.gridLayout = None
         self.gridLayoutWidget = None

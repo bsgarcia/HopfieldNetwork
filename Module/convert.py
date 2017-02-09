@@ -5,11 +5,11 @@ import time
 
 class Converter(object):
     
-    size = (100, 120)
-    path = "./outputs_img/" 
+    size = (50, 60)
+    path = "Data/outputs_img/" 
     
     @staticmethod
-    def img_to_array(file, threshold=100):
+    def img_to_array(file, threshold=80):
         """Read Image file and convert it to Numpy array"""
 
         pilIN = Image.open(file).convert(mode="L")
@@ -22,22 +22,24 @@ class Converter(object):
         return x
     
     @staticmethod
-    def array_to_img(datas, outFile=None):
+    def array_to_img(image, outFile=None):
         """Convert Numpy array to Image file like Jpeg"""
         
-        for i in range(len(datas)):
-            data = np.reshape(datas[i], Converter.size[::-1])
-            y = np.zeros(data.shape, dtype=np.uint8)
-            y[data == 1] = 255
-            y[data == -1] = 0
-            img = Image.fromarray(y, mode="L")
+        data= np.reshape(image, Converter.size[::-1])
+        y = np.zeros(data.shape, dtype=np.uint8)
+        y[data == 1] = 255
+        y[data == -1] = 0
+        img = Image.fromarray(y, mode="L")
             
-            if outFile is None:
-                img.save(
-                Converter.path + time.strftime(
-                    "%d_%B_%Y_%H_%M_%S_{}.jpg".format(i)))
-            else:
-                img.save(outFile)
+        if outFile is None:
+            path = Converter.path + time.strftime(
+                "%d_%B_%Y_%H_%M_%S_{}.jpg".format(np.random.randint(10000)))
+            img.save(path)
+
+            return path
+             
+        else:
+            img.save(outFile)
         
 if __name__ == '__main__':
     

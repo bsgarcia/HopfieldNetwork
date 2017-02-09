@@ -6,6 +6,8 @@ import PyQt5
 from PyQt5 import QtGui, QtCore, QtWidgets
 from hopfield import HopfieldNetwork
 from Data.numbers_to_learn import numbers
+from os import walk, getcwd
+from Module.convert import Converter
 
 
 class MainController(object):
@@ -20,7 +22,7 @@ class MainController(object):
         
         if self.net:
             stable = self.net.asynchronous_presentation(self.model.epochs)
-            self.update_items(self.net.x_y, self.net.x_y, self.net.outputs, stable)
+            self.update(self.net.x_y, self.net.x_y, self.net.outputs, stable)
             self.model.announce_update()
 
     def change_pushButton_2(self, checked):
@@ -29,7 +31,7 @@ class MainController(object):
         
         if self.net:
             stable = self.net.synchronous_presentation(self.model.epochs)
-            self.update_items(self.net.x_y, self.net.x_y, self.net.outputs, stable)
+            self.update(self.net.x_y, self.net.x_y, self.net.outputs, stable)
             self.model.announce_update()
 
     def change_pushButton_3(self, checked):
@@ -37,12 +39,9 @@ class MainController(object):
         print('DEBUG: change_pushButton_3 called with arg value:', checked)
         
         if self.model.gridLayoutWidget:
-            self.net.dataset = [numbers[i] for i in np.sort(list(numbers.keys()))]
-            stable = [None for i in range(len(self.net.dataset))]
-            self.net.outputs = np.copy(self.net.dataset)
-            self.update_items(self.net.x_y, self.net.x_y, self.net.dataset, stable) 
-        else: 
-            self.load_datas()
+                self.reset_datas() 
+            
+        self.load_datas()
         
         self.model.announce_update()
 
@@ -60,33 +59,62 @@ class MainController(object):
         print('DEBUG: change_comboBox called with arg value:', index)
     
     #################################################################################
-    def load_datas(self):
-        
-        if self.model.comboBox == 1:
-            datas = [numbers[i] for i in np.sort(list(numbers.keys()))]
-            self.net = HopfieldNetwork(datas)
-            self.net.init_weights_matrix()
+    def reset_datas(self):
+        del self.model.gridLayout
+        del self.model.gridLayoutWidget
 
-            self.fill_layout(
-                    self.net.x_y,
-                    self.net.x_y,
-                    datas, 
-                    stability=[None for i in range(len(datas))])
+    #################################################################################
+    def load_datas(self):
+        if self.model.comboBox == 1:
+            self.mode = "numbers"
+            self.load_numbers()
         else:
-            datas = []
-            for root, dirs, files in walk("./inputs_img/"):
-                for file in files: 
-                    arr = Converter.img_to_array("./inputs_img/"+file)
-                    array = np.concatenate(arr)
-                    datas.append(array)
+            self.mode = "img"
+            self.load_images()
     
     #################################################################################
-    def fill_layout(self, columns, rows, datas, stability):
+    def load_numbers(self):
+        datas = [numbers[i].copy() for i in np.sort(list(numbers.keys()))]
+        self.init_network(datas)
+
+        self.fill_layout_with_numbers(
+                self.net.x_y,
+                self.net.x_y,
+                datas, 
+                stability=[None for i in range(len(datas))])
+
+    #################################################################################
+    def load_images(self):
+        
+        datas_to_learn = []
+        img_to_print = []
+        
+        for root, dirs, files in walk("Data/inputs_img/"):
+            for file in files: 
+                arr = Converter.img_to_array("Data/inputs_img/" + file)
+                array = np.concatenate(arr)
+                img = Converter.array_to_img([array])
+                datas_to_learn.append(array)
+                img_to_print.append(img) 
+        
+        self.init_network(datas_to_learn)
+        self.fill_layout_with_images(
+                    self.net.x_y,
+                    self.net.x_y,
+                    img_to_print, 
+                    stability=[None for i in range(len(img_to_print))])  
+    
+    #################################################################################
+    def init_network(self, datas):
+        
+        self.net = HopfieldNetwork(datas)
+        self.net.init_weights_matrix()
+    
+    #################################################################################
+    def fill_layout_with_numbers(self, columns, rows, datas, stability):
         
         self.table = []
-        self.item_list = []
         self.text = []
-        self.datas = datas
         self.table_size = 9
         self.colors = {"blue": QtGui.QColor(0, 51, 51),
                        "white": QtGui.QColor(255, 255, 255)}
@@ -96,7 +124,7 @@ class MainController(object):
         coordinates = [(i,j) for i in range(2) for j in range(5)]
     
         #fill layout with grids
-        for i in range(len(self.datas)):    
+        for i in range(len(datas)):    
             self.table.append(QtWidgets.QTableWidget(rows, columns, self.model.gridLayoutWidget))
             self.table[i].verticalHeader().setVisible(False)
             self.table[i].horizontalHeader().setVisible(False)
@@ -120,11 +148,42 @@ class MainController(object):
                                                            coordinates[i][1])
             self.model.gridLayout.addWidget(self.text[i],  coordinates[i][0],
                                                            coordinates[i][1])
-        self.update_items(rows, columns, datas, stability)
-    
+        self.update_numbers(rows, columns, datas, stability)
     
     #################################################################################
-    def update_items(self, rows, columns, datas, stability):
+    def fill_layout_with_images(self, columns, rows, datas, stability):
+        
+        self.img = []
+        self.text = []
+        self.model.gridLayoutWidget = QtWidgets.QWidget()
+        self.model.gridLayout = QtWidgets.QGridLayout(self.model.gridLayoutWidget) 
+        coordinates = [(i,j) for i in range(2) for j in range(5)]
+        
+        for i in range(len(datas)):
+            self.img.append(QtWidgets.QLabel())
+            self.img[i].setPixmap(QtGui.QPixmap(getcwd() + "/" + datas[i]).scaled(100, 120))
+            self.img[i].setGeometry(10, 10, 200, 240)
+
+            self.text.append(QtWidgets.QLabel())
+            self.text[i].setGeometry(QtCore.QRect(120,80,180,70))
+            self.text[i].setText("Stability: {}".format(stability[i]))
+        
+            self.model.gridLayout.addWidget(self.img[i],   coordinates[i][0],
+                                                           coordinates[i][1])
+            self.model.gridLayout.addWidget(self.text[i],  coordinates[i][0] + 2,
+                                                           coordinates[i][1])
+
+    #################################################################################
+    def update(self, rows, columns, datas, stability):
+        
+        if self.mode == "numbers":
+            self.update_numbers(rows, columns, datas, stability)
+        else:
+            self.update_images(rows, columns, datas, stability)
+    
+    #################################################################################
+    def update_numbers(self, rows, columns, datas, stability):
+
         
         idx_gen = (i for i in range(len(datas)))
         
@@ -150,4 +209,28 @@ class MainController(object):
 
             elif type(itm) == PyQt5.QtWidgets.QLabel:
                 itm.setText("Stability: {}".format(stability[idx]))
+    
+    #################################################################################
+    def update_images(self, rows, columns, datas, stability):
+        
+        path_list = []
+        for  i in range(len(datas)):
+            path = Converter.array_to_img(datas[i])
+            path_list.append(path)
+        
+        i = 0
+        idx_gen = (i for i in range(len(datas)))
+        
+        for itm in self.model.gridLayoutWidget.children():
+            i += 1
+            
+            if i % 2 == 0 and type(itm) == PyQt5.QtWidgets.QLabel:
+                idx = next(idx_gen)
+                itm.setPixmap(QtGui.QPixmap(getcwd() + "/" + path_list[idx]).scaled(100, 120))
+                itm.setGeometry(10, 10, 200, 240)
+                 
+            if i % 2 != 0 and type(itm) == PyQt5.QtWidgets.QLabel:
+                itm.setText("Stability: {}".format(stability[idx]))
+            
+
 

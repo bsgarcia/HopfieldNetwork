@@ -25,6 +25,7 @@ class Ui_MainView(object):
         self.epochs.setGeometry(QtCore.QRect(370, 20, 61, 31))
         self.epochs.setObjectName("epochs")
         self.epochs.setMaximum(10000)
+        self.epochs.setValue(1)
         self.label = QtWidgets.QLabel(Form)
         self.label.setGeometry(QtCore.QRect(310, 30, 61, 20))
         self.label.setObjectName("label")
