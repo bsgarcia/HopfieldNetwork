@@ -55,6 +55,12 @@ class MainView(QtWidgets.QMainWindow):
     @comboBox.setter
     def comboBox(self, value):
         self.ui.comboBox.setCurrentIndex(value)
+    @property
+    def comboBox_2(self):
+        return self.ui.comboBox_2.currentIndex()
+    @comboBox.setter
+    def comboBox_2(self, value):
+        self.ui.comboBox_2.setCurrentIndex(value)
 
     #### properties for widget enabled state ####
     @property
@@ -105,7 +111,13 @@ class MainView(QtWidgets.QMainWindow):
     @comboBox_enabled.setter
     def comboBox_enabled(self, value):
         self.ui.comboBox.setEnabled(value)
-
+    @property
+    def comboBox_2_enabled(self):
+        return self.ui.comboBox_2.isEnabled()
+    @comboBox_enabled.setter
+    def comboBox_2_enabled(self, value):
+        self.ui.comboBox_2.setEnabled(value)
+    
     def __init__(self, model, main_ctrl, Ui_MainView):
         self.model = model
         self.main_ctrl = main_ctrl
@@ -128,6 +140,8 @@ class MainView(QtWidgets.QMainWindow):
         self.ui.checkBox.stateChanged.connect(self.on_checkBox)
         self.ui.epochs.valueChanged.connect(self.on_epochs)
         self.ui.comboBox.currentIndexChanged.connect(self.on_comboBox)
+        self.ui.comboBox_2.currentIndexChanged.connect(self.on_comboBox_2)
+
 
     def update_ui_from_model(self):
         print('DEBUG: update_ui_from_model called')
@@ -150,3 +164,4 @@ class MainView(QtWidgets.QMainWindow):
     def on_checkBox(self, state): self.main_ctrl.change_checkBox(state)
     def on_epochs(self, value): self.main_ctrl.change_epochs(value)
     def on_comboBox(self, index): self.main_ctrl.change_comboBox(index)
+    def on_comboBox_2(self, index): self.main_ctrl.change_comboBox_2(index)

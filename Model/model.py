@@ -13,6 +13,12 @@ class Model():
     @comboBox_items.setter
     def comboBox_items(self, value):
         self.comboBox_model.setStringList(value)
+    @property
+    def comboBox_2_items(self):
+        return self.comboBox_2_model.stringList()
+    @comboBox_items.setter
+    def comboBox_2_items(self, value):
+        self.comboBox_2_model.setStringList(value)
 
     def __init__(self):
         super(Model, self).__init__()
@@ -27,10 +33,12 @@ class Model():
             ('label_2', 'get'),
             ('epochs', 'getint'),
             ('comboBox', 'getint'),
+            ('comboBox_2', 'getint'),
         )
 
         #### create Qt models for compatible widget types ####
         self.comboBox_model = QtCore.QStringListModel()
+        self.comboBox_2_model = QtCore.QStringListModel()
 
         #### model variables ####
         self.pushButton = None
@@ -41,6 +49,7 @@ class Model():
         self.label_2 = None
         self.epochs = 1 
         self.comboBox = None
+        self.comboBox_2 = None
         self.gridLayout = None
         self.gridLayoutWidget = None
 

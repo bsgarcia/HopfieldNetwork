@@ -21,7 +21,8 @@ class MainController(object):
         print('DEBUG: change_pushButton called with arg value:', checked)
         
         if self.net:
-            stable = self.net.asynchronous_presentation(self.model.epochs)
+            stable = self.net.asynchronous_presentation(self.model.epochs,
+                                                        self.model.comboBox_2)
             self.update(self.net.x_y, self.net.x_y, self.net.outputs, stable)
             self.model.announce_update()
 
@@ -30,7 +31,8 @@ class MainController(object):
         print('DEBUG: change_pushButton_2 called with arg value:', checked)
         
         if self.net:
-            stable = self.net.synchronous_presentation(self.model.epochs)
+            stable = self.net.synchronous_presentation(self.model.epochs,
+                                                       self.model.comboBox_2)
             self.update(self.net.x_y, self.net.x_y, self.net.outputs, stable)
             self.model.announce_update()
 
@@ -58,6 +60,10 @@ class MainController(object):
         self.model.comboBox = index
         print('DEBUG: change_comboBox called with arg value:', index)
     
+    def change_comboBox_2(self, index):
+        self.model.comboBox_2 = index
+        print('DEBUG: change_comboBox_2 called with arg value:', index) 
+
     #################################################################################
     def reset_datas(self):
         del self.model.gridLayout

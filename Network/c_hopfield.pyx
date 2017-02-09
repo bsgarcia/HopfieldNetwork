@@ -23,7 +23,7 @@ cdef class HopfieldNetwork(object):
     """Hopfield neural network class"""
     
     cdef:
-        public list dataset, outputs
+        public list dataset, outputs, f
         public int lng, x_y, epochs
         public cnp.ndarray w_matrix
     
@@ -34,7 +34,9 @@ cdef class HopfieldNetwork(object):
         self.x_y = int(np.sqrt(self.lng))
         self.epochs = epochs                    #number of presentations
         self.w_matrix = None                    #weights matrices
+        self.f = [f1, f2, f3]
    
+#-------------------------------------------------------------------------#
     def init_weights_matrix(self):
         """weights matrix initialization"""
         cdef:
@@ -60,7 +62,8 @@ cdef class HopfieldNetwork(object):
         
         self.w_matrix = matrix
     
-    def synchronous_presentation(self, int epochs=1):
+#-------------------------------------------------------------------------#
+    def synchronous_presentation(self, int epochs, int f_id):
         """update network in a synchronous way"""
         cdef:
             cnp.ndarray stable, inputs, outputs
@@ -74,7 +77,7 @@ cdef class HopfieldNetwork(object):
                 outputs = np.dot(inputs, self.w_matrix)
                 
                 for j in range(len(outputs)):
-                    self.outputs[i][j] = f3(outputs[j], inputs[j])
+                    self.outputs[i][j] = self.f[f_id](outputs[j], inputs[j])
 
                 if np.all(np.sign(outputs) == np.sign(inputs)) : 
                     stable[i] = True
@@ -84,7 +87,8 @@ cdef class HopfieldNetwork(object):
         
         return stable
    
-    def asynchronous_presentation(self, int epochs=1):
+#-------------------------------------------------------------------------#
+    def asynchronous_presentation(self, int epochs, int f_id):
         """update network in an asynchronous way"""
         cdef:
             cnp.ndarray stable, t, inputs, outputs
@@ -97,7 +101,7 @@ cdef class HopfieldNetwork(object):
             for j in range(len(data)):
                 inputs = np.array(data)
                 outputs = np.dot(inputs, self.w_matrix)
-                data[j] = f3(outputs[j], inputs[j])
+                data[j] = self.f[f_id](outputs[j], inputs[j])
                 self.outputs[i] = data
                 
                 if np.all(np.sign(outputs) == np.sign(inputs)) : 
