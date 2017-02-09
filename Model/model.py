@@ -49,7 +49,7 @@ class Model():
         self.label_2 = None
         self.epochs = 1 
         self.comboBox = None
-        self.comboBox_2 = None
+        self.comboBox_2 = 0 
         self.gridLayout = None
         self.gridLayoutWidget = None
 
