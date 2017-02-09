@@ -5,7 +5,7 @@ import time
 
 class Converter(object):
     
-    size = (50, 60)
+    size = (80, 100)
     path = "Data/outputs_img/" 
     
     @staticmethod
@@ -23,9 +23,9 @@ class Converter(object):
     
     @staticmethod
     def array_to_img(image, outFile=None):
-        """Convert Numpy array to Image file like Jpeg"""
+        """Convert Numpy array to Image file"""
         
-        data= np.reshape(image, Converter.size[::-1])
+        data = np.reshape(image, Converter.size[::-1])
         y = np.zeros(data.shape, dtype=np.uint8)
         y[data == 1] = 255
         y[data == -1] = 0

@@ -117,7 +117,7 @@ class MainView(QtWidgets.QMainWindow):
     def build_ui(self, Ui_MainView):
         self.ui = Ui_MainView()
         self.ui.setupUi(self)
-        print(self.children()) 
+        
         #### set Qt model for compatible widget types ####
         # self.ui.comboBox.setModel(self.model.comboBox_model)
 
@@ -140,9 +140,8 @@ class MainView(QtWidgets.QMainWindow):
         # self.comboBox = self.model.comboBox
         self.ui.gridLayout = self.model.gridLayout
         self.ui.gridLayoutWidget = self.model.gridLayoutWidget
-        self.ui.gridLayoutWidget.update()
-        self.ui.gridLayoutWidget.hide()
         self.ui.gridLayoutWidget.show()
+        self.ui.gridLayoutWidget.update()
     
     #### widget signal event functions ####
     def on_pushButton(self): self.main_ctrl.change_pushButton(self.pushButton)

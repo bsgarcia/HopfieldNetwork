@@ -4,7 +4,7 @@
 import numpy as np
 import PyQt5
 from PyQt5 import QtGui, QtCore, QtWidgets
-from hopfield import HopfieldNetwork
+from Network.c_hopfield import HopfieldNetwork
 from Data.numbers_to_learn import numbers
 from os import walk, getcwd
 from Module.convert import Converter
@@ -184,13 +184,13 @@ class MainController(object):
     #################################################################################
     def update_numbers(self, rows, columns, datas, stability):
 
-        
         idx_gen = (i for i in range(len(datas)))
         
         for itm in self.model.gridLayoutWidget.children():
             if type(itm) == PyQt5.QtWidgets.QTableWidget:
                 
                 idx = next(idx_gen)
+                
                 #reshape vectors to make them fit to 
                 #QTable widgets dimensions (which are organized as matrices).
                 matrix = np.reshape(datas[idx], (rows, columns))
