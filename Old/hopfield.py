@@ -22,11 +22,9 @@ def f3(result, state):
 class HopfieldNetwork(object):
     """Hopfield neural network class"""
 
-    def __init__(self, dataset, epochs=1):
+    def __init__(self, dataset, epochs=150000):
         self.dataset = dataset      #datas the network is going to learn
-        self.outputs = dataset
         self.lng = len(dataset[0])              #length of a single matrix 
-        self.x_y = int(np.sqrt(self.lng))
         self.epochs = epochs                    #number of presentations
         self.w_matrix = None                    #weights matrices
    
@@ -52,52 +50,53 @@ class HopfieldNetwork(object):
         
         self.w_matrix = matrix
     
-    def synchronous_presentation(self, epochs=1):
+    def synchronous_presentation(self):
         """update network in a synchronous way"""
         stable = np.zeros(len(self.dataset))
-        t = np.zeros((len(self.dataset)))
+        outputs_array = np.copy(self.dataset) 
+        t = 0
 
-        for t in range(epochs):
-            for i, data in enumerate(self.dataset):
+        while not np.all(stable) and t < self.epochs: 
+            for i, data in enumerate(outputs_array):
                 
                 inputs = np.array(data)
                 outputs = np.dot(inputs, self.w_matrix)
+                
                 
                 for j in range(len(outputs)):
-                    self.outputs[i][j] = f3(outputs[j], inputs[j])
+                    outputs_array[i][j] = f3(outputs[j], inputs[j])
 
                 if np.all(np.sign(outputs) == np.sign(inputs)) : 
                     stable[i] = True
                 else: 
                     print('non stable', end='\n')
-                
+            t += 1
         
-        return stable
+        return (outputs_array, stable)
    
-    def asynchronous_presentation(self, epochs=1):
+    def asynchronous_presentation(self):
         """update network in an asynchronous way"""
         stable = np.zeros(len(self.dataset))
-        t = np.zeros((len(self.dataset)))
+        outputs_array = np.copy(self.dataset) 
+        t = 0
 
-        for i, data in enumerate(self.outputs):
+        while not np.all(stable) and t < self.epochs: 
+            for i, data in enumerate(outputs_array):
                 
-            for j in range(len(data)):
-                inputs = np.array(data)
-                outputs = np.dot(inputs, self.w_matrix)
-                data[j] = f3(outputs[j], inputs[j])
-                self.outputs[i] = data
+                for j in range(len(data)):
+                    inputs = np.array(data)
+                    outputs = np.dot(inputs, self.w_matrix)
+                    data[j] = f3(outputs[j], inputs[j])
+                    outputs_array[i] = data
+                    t += 1
+
+                    if np.all(np.sign(outputs) == np.sign(inputs)) : 
+                    # print('stable', end='\n')
+                        stable[i] = True
+                    else: 
+                        print('non stable', end='\n')
                 
-                if np.all(np.sign(outputs) == np.sign(inputs)) : 
-                # print('stable', end='\n')
-                    stable[i] = True
-                else: 
-                    print('non stable', end='\n')
-                
-                t[i] += 1
-                
-                if t[i] >= epochs:
-                    break
-                     
-        return stable 
+        
+        return (outputs_array, stable)    
             
 

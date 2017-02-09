@@ -72,10 +72,10 @@ class Window(QWidget):
 
 #--------------------------------------------------------------------------------------------------#
 
-def run(datas, stability):
-    
+def run(dimensions, datas, stability):
+     
     app = QApplication(sys.argv)
-    window = Window(6, 6, stability=stability, datas=datas)
+    window = Window(dimensions[0], dimensions[1], stability=stability, datas=datas)
     window.setWindowTitle("Hopfield neural network")
     sys.exit(app.exec_())
 
