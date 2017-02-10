@@ -5,12 +5,12 @@
 * cython
 
 ##Datas to learn
-Datas are either images or numbers, and are located in Data folder. 
+Datas are either images or numbers, and are located in data folder. 
 
 ##How to use it
-The hopfield network code (located in Network folder) is cythonized, therefore compiling is required:
+The hopfield network code (located in network folder) is cythonized, therefore compiling is required:
     
-    $ cd Network
+    $ cd network
     $ python setup.py build_ext --inplace
 
 And then: 
