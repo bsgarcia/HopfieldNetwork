@@ -1,13 +1,14 @@
 ###########################
 # ctrls\controller.py #
 ###########################
-import numpy as np
 import PyQt5
 from PyQt5 import QtGui, QtCore, QtWidgets
-from Network.c_hopfield import HopfieldNetwork
-from Data.numbers_to_learn import numbers
+from network.c_hopfield import HopfieldNetwork
+from data.numbers_to_learn import numbers
+from module.convert import Converter
 from os import walk, getcwd
-from Module.convert import Converter
+import numpy as np
+
 
 
 class MainController(object):
@@ -44,7 +45,6 @@ class MainController(object):
                 self.reset_datas() 
             
         self.load_datas()
-        
         self.model.announce_update()
 
     def change_checkBox(self, state):
@@ -91,13 +91,12 @@ class MainController(object):
 
     #################################################################################
     def load_images(self):
-        
         datas_to_learn = []
         img_to_print = []
         
-        for root, dirs, files in walk("Data/inputs_img/"):
+        for root, dirs, files in walk("data/inputs_img/"):
             for file in files: 
-                arr = Converter.img_to_array("Data/inputs_img/" + file)
+                arr = Converter.img_to_array("data/inputs_img/" + file)
                 array = np.concatenate(arr)
                 img = Converter.array_to_img([array])
                 datas_to_learn.append(array)
@@ -112,13 +111,11 @@ class MainController(object):
     
     #################################################################################
     def init_network(self, datas):
-        
         self.net = HopfieldNetwork(datas)
         self.net.init_weights_matrix()
     
     #################################################################################
     def fill_layout_with_numbers(self, columns, rows, datas, stability):
-        
         self.table = []
         self.text = []
         self.table_size = 9
@@ -158,7 +155,6 @@ class MainController(object):
     
     #################################################################################
     def fill_layout_with_images(self, columns, rows, datas, stability):
-        
         self.img = []
         self.text = []
         self.model.gridLayoutWidget = QtWidgets.QWidget()
@@ -181,7 +177,6 @@ class MainController(object):
 
     #################################################################################
     def update(self, rows, columns, datas, stability):
-        
         if self.mode == "numbers":
             self.update_numbers(rows, columns, datas, stability)
         else:
@@ -189,7 +184,6 @@ class MainController(object):
     
     #################################################################################
     def update_numbers(self, rows, columns, datas, stability):
-
         idx_gen = (i for i in range(len(datas)))
         
         for itm in self.model.gridLayoutWidget.children():
@@ -218,7 +212,6 @@ class MainController(object):
     
     #################################################################################
     def update_images(self, rows, columns, datas, stability):
-        
         path_list = []
         for  i in range(len(datas)):
             path = Converter.array_to_img(datas[i])
@@ -228,6 +221,7 @@ class MainController(object):
         idx_gen = (i for i in range(len(datas)))
         
         for itm in self.model.gridLayoutWidget.children():
+            
             i += 1
             
             if i % 2 == 0 and type(itm) == PyQt5.QtWidgets.QLabel:
