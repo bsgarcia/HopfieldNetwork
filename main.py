@@ -3,10 +3,10 @@
 ##########
 import sys
 from PyQt5 import QtGui, QtWidgets
-from Model.model import Model
-from Ctrls.controller import MainController
-from View.UI import Ui_MainView
-from View.view import MainView
+from model.model import Model
+from ctrls.controller import MainController
+from view.UI import Ui_MainView
+from view.view import MainView
 
 
 class App(QtWidgets.QApplication):

@@ -6,7 +6,7 @@ import time
 class Converter(object):
     
     size = (80, 100)
-    path = "Data/outputs_img/" 
+    path = "data/outputs_img/" 
     
     @staticmethod
     def img_to_array(file, threshold=80):
