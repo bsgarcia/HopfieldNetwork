@@ -40,13 +40,13 @@ cdef class HopfieldNetwork(object):
     def init_weights_matrix(self):
         """weights matrix initialization"""
         cdef:
-            cnp.ndarray matrix, z
+            cnp.ndarray matrix, v
 
         matrix = np.zeros((self.lng, self.lng))
         
         for data in self.dataset:
-            z = np.array(data).reshape(1, self.lng)
-            matrix += z * z.T
+            v= np.array(data).reshape(1, self.lng)
+            matrix += v * v.T
             print("_"*5, data, "_"*5)
             print(matrix)
         
