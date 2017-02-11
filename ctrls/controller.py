@@ -10,7 +10,6 @@ from os import walk, getcwd
 import numpy as np
 
 
-
 class MainController(object):
 
     def __init__(self, model):
@@ -64,21 +63,24 @@ class MainController(object):
         self.model.comboBox_2 = index
         print('DEBUG: change_comboBox_2 called with arg value:', index) 
 
-    #################################################################################
+    #===============================================================================#
     def reset_datas(self):
         del self.model.gridLayout
         del self.model.gridLayoutWidget
-
-    #################################################################################
+        self.init_layout()
+    
+    #===============================================================================#
     def load_datas(self):
+        self.init_layout()
+        
         if self.model.comboBox == 1:
             self.mode = "numbers"
             self.load_numbers()
         else:
             self.mode = "img"
             self.load_images()
-    
-    #################################################################################
+ 
+    #===============================================================================#
     def load_numbers(self):
         datas = [numbers[i].copy() for i in np.sort(list(numbers.keys()))]
         self.init_network(datas)
@@ -89,7 +91,7 @@ class MainController(object):
                 datas, 
                 stability=[None for i in range(len(datas))])
 
-    #################################################################################
+    #===============================================================================#
     def load_images(self):
         datas_to_learn = []
         img_to_print = []
@@ -103,89 +105,96 @@ class MainController(object):
                 img_to_print.append(img) 
         
         self.init_network(datas_to_learn)
+        
         self.fill_layout_with_images(
                     self.net.x_y,
                     self.net.x_y,
                     img_to_print, 
                     stability=[None for i in range(len(img_to_print))])  
     
-    #################################################################################
+    #===============================================================================#
     def init_network(self, datas):
         self.net = HopfieldNetwork(datas)
         self.net.init_weights_matrix()
     
-    #################################################################################
-    def fill_layout_with_numbers(self, columns, rows, datas, stability):
-        self.table = []
-        self.text = []
-        self.table_size = 9
-        self.colors = {"blue": QtGui.QColor(0, 51, 51),
-                       "white": QtGui.QColor(255, 255, 255)}
-
+    #===============================================================================#
+    def init_layout(self):
         self.model.gridLayoutWidget = QtWidgets.QWidget()
         self.model.gridLayout = QtWidgets.QGridLayout(self.model.gridLayoutWidget) 
+        if not self.model.comboBox:
+            self.model.gridLayoutWidget.setStyleSheet("border: 1px solid #5D5D5C;"
+                                                      "background: white" )
+    #===============================================================================#
+    def fill_layout_with_numbers(self, columns, rows, datas, stability):
+        table = []
+        text = []
+        table_size = 9
+        colors = {"blue": QtGui.QColor(0, 51, 51),
+                  "white": QtGui.QColor(255, 255, 255)}
+        
         coordinates = [(i,j) for i in range(2) for j in range(5)]
     
         #fill layout with grids
         for i in range(len(datas)):    
-            self.table.append(QtWidgets.QTableWidget(rows, columns, self.model.gridLayoutWidget))
-            self.table[i].verticalHeader().setVisible(False)
-            self.table[i].horizontalHeader().setVisible(False)
+            table.append(QtWidgets.QTableWidget(rows, columns, self.model.gridLayoutWidget))
+            table[i].verticalHeader().setVisible(False)
+            table[i].horizontalHeader().setVisible(False)
             
             for y in range(rows):
-                self.table[i].setRowHeight(y, self.table_size)
+                table[i].setRowHeight(y, table_size)
             for x in range(columns):
-                self.table[i].setColumnWidth(x, self.table_size)
+                table[i].setColumnWidth(x, table_size)
             
             #assign items to each cell (required to colorize them)
             for row in range(rows):
                 for column in range(columns):
                     item = QtWidgets.QTableWidgetItem()
-                    self.table[i].setItem(row, column, item)
+                    table[i].setItem(row, column, item)
         
-            self.text.append(QtWidgets.QLabel(self.model.gridLayoutWidget))
-            self.text[i].setGeometry(QtCore.QRect(120,80,180,70))
-            self.text[i].setText("Stability: {}".format(stability[i]))
+            text.append(QtWidgets.QLabel(self.model.gridLayoutWidget))
+            text[i].setText("Stability: {}".format(stability[i]))
         
-            self.model.gridLayout.addWidget(self.table[i], coordinates[i][0],
-                                                           coordinates[i][1])
-            self.model.gridLayout.addWidget(self.text[i],  coordinates[i][0],
-                                                           coordinates[i][1])
+            self.model.gridLayout.addWidget(table[i], coordinates[i][0],
+                                                      coordinates[i][1])
+            self.model.gridLayout.addWidget(text[i],  coordinates[i][0],
+                                                      coordinates[i][1])
+        
         self.update_numbers(rows, columns, datas, stability)
     
-    #################################################################################
+    #===============================================================================#
     def fill_layout_with_images(self, columns, rows, datas, stability):
-        self.img = []
-        self.text = []
-        self.model.gridLayoutWidget = QtWidgets.QWidget()
-        self.model.gridLayout = QtWidgets.QGridLayout(self.model.gridLayoutWidget) 
-        coordinates = [(i,j) for i in range(2) for j in range(5)]
-        
+        img = []
+        text = []
+        coord_img = [(i, j) for i in range(0, 3, 2) for j in range(0, 8, 2)]
+        coord_text = [(i ,j) for i in range(1, 4, 2) for j in range(0, 8, 2)]
+
         for i in range(len(datas)):
-            self.img.append(QtWidgets.QLabel())
-            self.img[i].setPixmap(QtGui.QPixmap(getcwd() + "/" + datas[i]).scaled(100, 120))
-            self.img[i].setGeometry(10, 10, 200, 240)
+            img.append(QtWidgets.QLabel())
+            img[i].setPixmap(QtGui.QPixmap(getcwd() + "/" + datas[i]).scaled(100, 120))
+            img[i].setGeometry(10, 10, 200, 240)
 
-            self.text.append(QtWidgets.QLabel())
-            self.text[i].setGeometry(QtCore.QRect(120,80,180,70))
-            self.text[i].setText("Stability: {}".format(stability[i]))
+            text.append(QtWidgets.QLabel())
+            text[i].setText("Stability: {}".format(stability[i]))
         
-            self.model.gridLayout.addWidget(self.img[i],   coordinates[i][0],
-                                                           coordinates[i][1])
-            self.model.gridLayout.addWidget(self.text[i],  coordinates[i][0] + 2,
-                                                           coordinates[i][1])
+            self.model.gridLayout.addWidget(img[i],   coord_img[i][0],
+                                                      coord_img[i][1])
+            self.model.gridLayout.addWidget(text[i],  coord_text[i][0],
+                                                      coord_text[i][1])
 
-    #################################################################################
+    #===============================================================================#
     def update(self, rows, columns, datas, stability):
         if self.mode == "numbers":
             self.update_numbers(rows, columns, datas, stability)
         else:
             self.update_images(rows, columns, datas, stability)
     
-    #################################################################################
+    #===============================================================================#
     def update_numbers(self, rows, columns, datas, stability):
         idx_gen = (i for i in range(len(datas)))
+        colors = {"blue": QtGui.QColor(0, 51, 51),
+                  "white": QtGui.QColor(255, 255, 255)}
         
+
         for itm in self.model.gridLayoutWidget.children():
             if type(itm) == PyQt5.QtWidgets.QTableWidget:
                 
@@ -201,16 +210,16 @@ class MainController(object):
                 
                 for j in range(len(white[0])):
                     coordinates = (white[0][j], white[1][j])
-                    itm.item(coordinates[0], coordinates[1]).setBackground(self.colors["white"]) 
+                    itm.item(coordinates[0], coordinates[1]).setBackground(colors["white"]) 
                     
                 for j in range(len(blue[0])):
                     coordinates = (blue[0][j], blue[1][j])
-                    itm.item(coordinates[0], coordinates[1]).setBackground(self.colors["blue"]) 
+                    itm.item(coordinates[0], coordinates[1]).setBackground(colors["blue"]) 
 
             elif type(itm) == PyQt5.QtWidgets.QLabel:
                 itm.setText("Stability: {}".format(stability[idx]))
     
-    #################################################################################
+    #===============================================================================#
     def update_images(self, rows, columns, datas, stability):
         path_list = []
         for  i in range(len(datas)):

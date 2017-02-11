@@ -146,16 +146,13 @@ class MainView(QtWidgets.QMainWindow):
     def update_ui_from_model(self):
         print('DEBUG: update_ui_from_model called')
         #### update widget values from model ####
-        # self.pushButton = self.model.pushButton
-        # self.pushButton_2 = self.model.pushButton_2
-        # self.pushButton_3 = self.model.pushButton_3
-        # self.checkBox = self.model.checkBox
-        # self.epochs = self.model.epochs
-        # self.comboBox = self.model.comboBox
         self.ui.gridLayout = self.model.gridLayout
+        self.ui.gridLayoutWidget.setVisible(False)
         self.ui.gridLayoutWidget = self.model.gridLayoutWidget
-        self.ui.gridLayoutWidget.show()
+        self.ui.gridLayoutWidget.setParent(self)
+        self.ui.gridLayoutWidget.setGeometry(QtCore.QRect(19, 79, 900, 600))
         self.ui.gridLayoutWidget.update()
+        self.ui.gridLayoutWidget.show()
     
     #### widget signal event functions ####
     def on_pushButton(self): self.main_ctrl.change_pushButton(self.pushButton)

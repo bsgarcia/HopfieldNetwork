@@ -11,7 +11,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainView(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
-        Form.resize(920, 80)
+        Form.resize(945, 690)
         self.checkBox = QtWidgets.QCheckBox(Form)
         self.checkBox.setGeometry(QtCore.QRect(565, 30, 131, 20))
         self.checkBox.setObjectName("checkBox")
