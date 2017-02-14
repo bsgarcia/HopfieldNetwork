@@ -5,6 +5,7 @@
 cimport numpy as cnp
 import numpy as np
 
+
 #-----------------------||| Activation functions |||---------------------------------------#
 
 def f1(result, *state):
@@ -36,7 +37,7 @@ cdef class HopfieldNetwork(object):
         self.w_matrix = None                    #weights matrices
         self.f = [f1, f2, f3]
    
-#-------------------------------------------------------------------------#
+#------------------------------------------------------------------------------------------#
     def init_weights_matrix(self):
         """weights matrix initialization"""
         cdef:
@@ -62,16 +63,16 @@ cdef class HopfieldNetwork(object):
         
         self.w_matrix = matrix
     
-#-------------------------------------------------------------------------#
+#------------------------------------------------------------------------------------------#
     def synchronous_presentation(self, int epochs, int f_id):
         """update network in a synchronous way"""
         cdef:
             cnp.ndarray stable, inputs, outputs
 
-        stable = np.zeros(len(self.dataset))
+        stable = np.zeros(len(self.outputs))
 
         for t in range(epochs):
-            for i, data in enumerate(self.dataset):
+            for i, data in enumerate(self.outputs):
                 
                 inputs = np.array(data)
                 outputs = np.dot(inputs, self.w_matrix)
@@ -87,21 +88,23 @@ cdef class HopfieldNetwork(object):
         
         return stable
    
-#-------------------------------------------------------------------------#
+#------------------------------------------------------------------------------------------#
     def asynchronous_presentation(self, int epochs, int f_id):
         """update network in an asynchronous way"""
         cdef:
-            cnp.ndarray stable, t, inputs, outputs
+            cnp.ndarray stable, t, inputs, outputs, randomized
 
-        stable = np.zeros(len(self.dataset))
-        t = np.zeros((len(self.dataset)))
+        stable = np.zeros(len(self.outputs))
+        t = np.zeros((len(self.outputs)))
 
         for i, data in enumerate(self.outputs):
-                
-            for j in range(len(data)):
+            randomized =  np.arange(len(data))
+            np.random.shuffle(randomized)
+
+            for idx in randomized:
                 inputs = np.array(data)
                 outputs = np.dot(inputs, self.w_matrix)
-                data[j] = self.f[f_id](outputs[j], inputs[j])
+                data[idx] = self.f[f_id](outputs[idx], inputs[idx])
                 self.outputs[i] = data
                 
                 if np.all(np.sign(outputs) == np.sign(inputs)) : 
@@ -112,7 +115,7 @@ cdef class HopfieldNetwork(object):
                 
                 t[i] += 1
                 
-                if t[i] >= epochs:
+                if t[i] >= epochs*len(data):
                     break
                      
         return stable 

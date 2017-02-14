@@ -1,8 +1,11 @@
 #Hopfield Artificial Neural Network
+##Screenshots
+![learning pictures](http://i.imgur.com/SFJfHVz.png)
 ##Dependencies
 * numpy
 * PyQt5
 * cython
+* pillow (PIL)
 
 ##Datas to learn
 Datas are either images or numbers, and are located in data folder. 

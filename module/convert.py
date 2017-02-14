@@ -5,7 +5,7 @@ import time
 
 class Converter(object):
     
-    size = (80, 100)
+    size = (70, 90)
     path = "data/outputs_img/" 
     
     @staticmethod
