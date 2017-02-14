@@ -1,6 +1,4 @@
 #Hopfield Artificial Neural Network
-##GUI screenshot
-![learning pictures](http://i.imgur.com/SFJfHVz.png =200x150)
 ##Dependencies
 * numpy
 * PyQt5
@@ -21,6 +19,8 @@ And then:
     $ cd .. 
     $ python main.py
 
+##GUI screenshot
+![learning pictures](http://i.imgur.com/SFJfHVz.png =200x150)
 
 
 
