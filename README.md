@@ -1,6 +1,6 @@
 #Hopfield Artificial Neural Network
-##GUI Screenshots
-![learning pictures](http://i.imgur.com/SFJfHVz.png =500x400)
+##GUI screenshot
+![learning pictures](http://i.imgur.com/SFJfHVz.png =150x70)
 ##Dependencies
 * numpy
 * PyQt5
