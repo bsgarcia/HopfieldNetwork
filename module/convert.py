@@ -4,12 +4,11 @@ import time
 
 
 class Converter(object):
-    
-    size = (70, 90)
+    size = (90, 100)
     path = "data/outputs_img/" 
     
     @staticmethod
-    def img_to_array(file, threshold=80):
+    def img_to_array(file, threshold=110):
         """Read Image file and convert it to Numpy array"""
 
         pilIN = Image.open(file).convert(mode="L")
@@ -35,14 +34,12 @@ class Converter(object):
             path = Converter.path + time.strftime(
                 "%d_%B_%Y_%H_%M_%S_{}.jpg".format(np.random.randint(10000)))
             img.save(path)
-
             return path
              
         else:
             img.save(outFile)
         
 if __name__ == '__main__':
-    
     array = Converter.img_to_array("./inputs_img/cryingpeter.jpg")
     Converter.array_to_img(array)
 

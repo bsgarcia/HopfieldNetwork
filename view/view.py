@@ -26,6 +26,12 @@ class MainView(QtWidgets.QMainWindow):
     def pushButton_3(self, value):
         self.ui.pushButton_3.setChecked(value)
     @property
+    def pushButton_4(self):
+        return self.ui.pushButton_4.isChecked()
+    @pushButton_4.setter
+    def pushButton_4(self, value):
+        self.ui.pushButton_4.setChecked(value)
+    @property
     def checkBox(self):
         return self.ui.checkBox.isChecked()
     @checkBox.setter
@@ -137,6 +143,7 @@ class MainView(QtWidgets.QMainWindow):
         self.ui.pushButton.clicked.connect(self.on_pushButton)
         self.ui.pushButton_2.clicked.connect(self.on_pushButton_2)
         self.ui.pushButton_3.clicked.connect(self.on_pushButton_3)
+        self.ui.pushButton_4.clicked.connect(self.on_pushButton_4)
         self.ui.checkBox.stateChanged.connect(self.on_checkBox)
         self.ui.epochs.valueChanged.connect(self.on_epochs)
         self.ui.comboBox.currentIndexChanged.connect(self.on_comboBox)
@@ -153,11 +160,17 @@ class MainView(QtWidgets.QMainWindow):
         self.ui.gridLayoutWidget.setGeometry(QtCore.QRect(19, 79, 900, 600))
         self.ui.gridLayoutWidget.update()
         self.ui.gridLayoutWidget.show()
-    
+        
+        if self.model.gridLayoutWidget_2: 
+            self.ui.gridLayoutWidget_2 = self.model.gridLayoutWidget_2
+            self.ui.gridLayout_2 = self.model.gridLayout_2
+            self.ui.gridLayoutWidget_2.show()
+
     #### widget signal event functions ####
     def on_pushButton(self): self.main_ctrl.change_pushButton(self.pushButton)
     def on_pushButton_2(self): self.main_ctrl.change_pushButton_2(self.pushButton_2)
     def on_pushButton_3(self): self.main_ctrl.change_pushButton_3(self.pushButton_3)
+    def on_pushButton_4(self): self.main_ctrl.change_pushButton_4(self.pushButton_4)
     def on_checkBox(self, state): self.main_ctrl.change_checkBox(state)
     def on_epochs(self, value): self.main_ctrl.change_epochs(value)
     def on_comboBox(self, index): self.main_ctrl.change_comboBox(index)

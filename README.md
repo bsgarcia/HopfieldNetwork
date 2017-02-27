@@ -4,6 +4,7 @@
 * PyQt5
 * cython
 * pillow (PIL)
+* tqdm
 
 ##Datas to learn
 Datas are either images or numbers, and are located in data folder. 
@@ -20,7 +21,7 @@ And then:
     $ python main.py
 
 ##GUI screenshot
-![learning pictures](http://i.imgur.com/SFJfHVz.png =200x150)
+![learning pictures](http://i.imgur.com/iSYbLDg.png =200x150)
 
 
 

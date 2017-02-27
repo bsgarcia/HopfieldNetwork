@@ -28,6 +28,7 @@ class Model():
             ('pushButton', 'getboolean'),
             ('pushButton_2', 'getboolean'),
             ('pushButton_3', 'getboolean'),
+            ('pushButton_4', 'getboolean'),
             ('checkBox', 'getboolean'),
             ('label', 'get'),
             ('label_2', 'get'),
@@ -44,7 +45,8 @@ class Model():
         self.pushButton = None
         self.pushButton_2 = None
         self.pushButton_3 = None
-        self.checkBox = None
+        self.pushButton_4 = None
+        self.checkBox = False
         self.label = None
         self.label_2 = None
         self.epochs = 1 
@@ -52,6 +54,8 @@ class Model():
         self.comboBox_2 = 0 
         self.gridLayout = None
         self.gridLayoutWidget = None
+        self.gridLayout_2 = None
+        self.gridLayoutWidget_2 = None
 
     def subscribe_update_func(self, func):
         if func not in self._update_funcs:
