@@ -36,8 +36,10 @@ class Ui_MainView(object):
         self.label.setGeometry(QtCore.QRect(435, 30, 61, 20))
         self.label.setObjectName("label")
         self.gridLayoutWidget = QtWidgets.QWidget(Form)
-        self.gridLayoutWidget.setGeometry(QtCore.QRect(19, 79, 500, 300))
+        self.gridLayoutWidget.setGeometry(QtCore.QRect(19, 79, 920, 600))
         self.gridLayoutWidget.setObjectName("gridLayoutWidget")
+        self.gridLayoutWidget.setStyleSheet("border: 1px solid #5D5D5C;"
+                                            "background: white")
         self.gridLayout = QtWidgets.QGridLayout(self.gridLayoutWidget)
         self.gridLayout.setContentsMargins(0, 0, 0, 0)
         self.gridLayout.setObjectName("gridLayout")

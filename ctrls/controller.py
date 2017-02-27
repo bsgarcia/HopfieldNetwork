@@ -20,25 +20,35 @@ class MainController(object):
     def change_pushButton(self, checked):
         self.model.pushButton = checked
         print('DEBUG: change_pushButton called with arg value:', checked)
-
-        if self.net:
+        
+        try:
             stable = self.net.asynchronous_presentation(self.model.epochs,
                                                         self.model.comboBox_2,
                                                         self.model.checkBox)
             self.update(self.net.x_y, self.net.x_y, self.net.outputs, stable)
             self.model.announce_update()
+        except AttributeError:
+            msgbox = QtWidgets.QMessageBox()
+            msgbox.setWindowTitle("Error")
+            msgbox.setText("No pattern learned! \nSelect images or numbers before!")
+            msgbox.exec_()
 
     #==================== asynchronous update event ===============================
     def change_pushButton_2(self, checked):
         self.model.pushButton_2 = checked
         print('DEBUG: change_pushButton_2 called with arg value:', checked)
-
-        if self.net:
+            
+        try:
             stable = self.net.synchronous_presentation(self.model.epochs,
                                                        self.model.comboBox_2,
                                                        self.model.checkBox)
             self.update(self.net.x_y, self.net.x_y, self.net.outputs, stable)
             self.model.announce_update()
+        except AttributeError:
+            msgbox = QtWidgets.QMessageBox()
+            msgbox.setWindowTitle("Error")
+            msgbox.setText("No pattern learned! \nSelect images or numbers before!")
+            msgbox.exec_()
 
     #==================== load or reload data =====================================
     def change_pushButton_3(self, checked):
@@ -59,27 +69,34 @@ class MainController(object):
         self.model.gridLayoutWidget_2 = QtWidgets.QWidget()
         self.model.gridLayout_2 = QtWidgets.QGridLayout(self.model.gridLayoutWidget_2)
         
-        if self.mode == "img":
-            self.fill_layout_with_images(
-                self.learned_path,
-                stability=[None for i in range(len(self.learned_path))],
-                layout=self.model.gridLayout_2)
-            
-            self.model.gridLayoutWidget_2.setStyleSheet(
-                    "border: 1px solid #5D5D5C;"
-                    "background: white")
-        else:
-            self.fill_layout_with_numbers(
-                self.net.x_y,
-                self.net.x_y,
-                self.net.dataset,
-                stability=[None for i in range(len(self.net.dataset))],
-                layout=self.model.gridLayout_2,
-                widget=self.model.gridLayoutWidget_2)
-            
-        self.model.announce_update()
-        self.model.gridLayout_2 = None
-        self.model.gridLayoutWidget_2 = None
+        try:
+            if self.mode == "img":
+                self.fill_layout_with_images(
+                    self.learned_path,
+                    stability=[None for i in range(len(self.learned_path))],
+                    layout=self.model.gridLayout_2)
+                
+                self.model.gridLayoutWidget_2.setStyleSheet(
+                        "border: 1px solid #5D5D5C;"
+                        "background: white")
+            else:
+                self.fill_layout_with_numbers(
+                    self.net.x_y,
+                    self.net.x_y,
+                    self.net.dataset,
+                    stability=[None for i in range(len(self.net.dataset))],
+                    layout=self.model.gridLayout_2,
+                    widget=self.model.gridLayoutWidget_2)
+                
+            self.model.announce_update()
+            self.model.gridLayout_2 = None
+            self.model.gridLayoutWidget_2 = None
+        
+        except AttributeError:
+            msgbox = QtWidgets.QMessageBox()
+            msgbox.setWindowTitle("Error")
+            msgbox.setText("No pattern learned! \nSelect images or numbers before!")
+            msgbox.exec_()
 
     #==================== force stability ==========================================
     def change_checkBox(self, state):
