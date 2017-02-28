@@ -44,28 +44,31 @@ cdef class HopfieldNetwork(object):
     cdef init_weights_matrix(self):
         """weights matrix initialization"""
         cdef:
-            cnp.ndarray matrix, v
+            cnp.ndarray v
 
-        matrix = np.zeros((self.lng, self.lng))
+        self.w_matrix = np.zeros((self.lng, self.lng))
         
         for data in self.dataset.copy():
             v = np.array(data).reshape(1, self.lng)
-            matrix += v * v.T
+            self.w_matrix += v * v.T
             print("_"*5, data, "_"*5)
-            print(matrix)
+            print(self.w_matrix)
         
-        for x in range(matrix.shape[0]):
-            for y in range(matrix.shape[1]):
+        for x in range(self.w_matrix.shape[0]):
+            for y in range(self.w_matrix.shape[1]):
                 if x == y:
-                    matrix[x][y] = 0
+                    self.w_matrix[x][y] = 0
         
-        print(len(matrix))
-        matrix /= self.lng
-        print("="*5, "final", "="*5)
-        print(matrix)
-        
-        self.w_matrix = matrix
-    
+        self.w_matrix /= self.lng
+
+#------------------------------------------------------------------------------------------#
+    def unlearn_pattern(self, pattern):
+        cdef:
+            cnp.ndarray v 
+
+        v = np.array(pattern).reshape(1, self.lng) 
+        self.w_matrix -= v * v.T
+
 #------------------------------------------------------------------------------------------#
     def synchronous_presentation(self, int epochs, int f_id, bint force_stability):
         """update network in a synchronous way"""

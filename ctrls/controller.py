@@ -27,6 +27,7 @@ class MainController(object):
                                                         self.model.checkBox)
             self.update(self.net.x_y, self.net.x_y, self.net.outputs, stable)
             self.model.announce_update()
+        
         except AttributeError:
             msgbox = QtWidgets.QMessageBox()
             msgbox.setWindowTitle("Error")
@@ -44,6 +45,7 @@ class MainController(object):
                                                        self.model.checkBox)
             self.update(self.net.x_y, self.net.x_y, self.net.outputs, stable)
             self.model.announce_update()
+        
         except AttributeError:
             msgbox = QtWidgets.QMessageBox()
             msgbox.setWindowTitle("Error")
@@ -55,8 +57,7 @@ class MainController(object):
         self.model.pushButton_3 = checked
         print('DEBUG: change_pushButton_3 called with arg value:', checked)
 
-        if self.model.gridLayoutWidget:
-            self.reset_data()
+        self.reset_data()
 
         self.load_data()
         self.model.announce_update()
@@ -68,6 +69,7 @@ class MainController(object):
         
         self.model.gridLayoutWidget_2 = QtWidgets.QWidget()
         self.model.gridLayout_2 = QtWidgets.QGridLayout(self.model.gridLayoutWidget_2)
+        self.model.comboBox_3 = QtWidgets.QComboBox()
         
         try:
             if self.mode == "img":
@@ -76,6 +78,7 @@ class MainController(object):
                     stability=[None for i in range(len(self.learned_path))],
                     layout=self.model.gridLayout_2)
                 
+                self.model.gridLayout_2.addWidget(self.model.comboBox_3)
                 self.model.gridLayoutWidget_2.setStyleSheet(
                         "border: 1px solid #5D5D5C;"
                         "background: white")
@@ -87,7 +90,14 @@ class MainController(object):
                     stability=[None for i in range(len(self.net.dataset))],
                     layout=self.model.gridLayout_2,
                     widget=self.model.gridLayoutWidget_2)
-                
+            
+            _translate = QtCore.QCoreApplication.translate
+            
+            for i, pattern in enumerate(self.net.dataset):
+                self.model.comboBox_3.addItem("")
+                self.model.comboBox_3.setItemText(i, _translate("Form", 
+                                                                "{}".format(i)))
+ 
             self.model.announce_update()
             self.model.gridLayout_2 = None
             self.model.gridLayoutWidget_2 = None
@@ -117,6 +127,11 @@ class MainController(object):
     def change_comboBox_2(self, index):
         self.model.comboBox_2 = index
         print('DEBUG: change_comboBox_2 called with arg value:', index)
+    
+    #====================  unlearn choice ==========================================
+    def change_comboBox_3(self, index):
+        self.model.comboBox_3 = index
+        print('DEBUG: change_comboBox_3 called with arg value:', index)
 
     #===============================================================================
     def reset_data(self):
@@ -170,7 +185,7 @@ class MainController(object):
         path_list = []
         img_to_learn = []
         for root, dirs, files in walk("data/learn_img/"):
-            for file in files:
+            for file in sorted(files):
                 arr = Converter.img_to_array("data/learn_img/" + file)
                 array = np.concatenate(arr)
                 img_to_learn.append(array)
@@ -183,7 +198,7 @@ class MainController(object):
         path_list = []
         img_to_present = []
         for root, dirs, files in walk("data/test_img/"):
-            for file in files:
+            for file in sorted(files):
                 arr = Converter.img_to_array("data/test_img/" + file)
                 array = np.concatenate(arr)
                 img_to_present.append(array)

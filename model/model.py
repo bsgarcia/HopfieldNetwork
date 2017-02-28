@@ -35,11 +35,13 @@ class Model():
             ('epochs', 'getint'),
             ('comboBox', 'getint'),
             ('comboBox_2', 'getint'),
+            ('comboBox_3', 'getint'),
         )
 
         #### create Qt models for compatible widget types ####
         self.comboBox_model = QtCore.QStringListModel()
         self.comboBox_2_model = QtCore.QStringListModel()
+        self.comboBox_3_model = QtCore.QStringListModel()
 
         #### model variables ####
         self.pushButton = None
@@ -52,6 +54,7 @@ class Model():
         self.epochs = 1 
         self.comboBox = None
         self.comboBox_2 = 0 
+        self.comboBox_3 = None
         self.gridLayout = None
         self.gridLayoutWidget = None
         self.gridLayout_2 = None

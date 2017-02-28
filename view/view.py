@@ -123,6 +123,12 @@ class MainView(QtWidgets.QMainWindow):
     @comboBox_enabled.setter
     def comboBox_2_enabled(self, value):
         self.ui.comboBox_2.setEnabled(value)
+    @property
+    def comboBox_3_enabled(self):
+        return self.ui.comboBox_3.isEnabled()
+    @comboBox_enabled.setter
+    def comboBox_3_enabled(self, value):
+        self.ui.comboBox_3.setEnabled(value)
     
     def __init__(self, model, main_ctrl, Ui_MainView):
         self.model = model
@@ -148,6 +154,7 @@ class MainView(QtWidgets.QMainWindow):
         self.ui.epochs.valueChanged.connect(self.on_epochs)
         self.ui.comboBox.currentIndexChanged.connect(self.on_comboBox)
         self.ui.comboBox_2.currentIndexChanged.connect(self.on_comboBox_2)
+        self.ui.comboBox_3.currentIndexChanged.connect(self.on_comboBox_3)
 
 
     def update_ui_from_model(self):
@@ -175,3 +182,4 @@ class MainView(QtWidgets.QMainWindow):
     def on_epochs(self, value): self.main_ctrl.change_epochs(value)
     def on_comboBox(self, index): self.main_ctrl.change_comboBox(index)
     def on_comboBox_2(self, index): self.main_ctrl.change_comboBox_2(index)
+    def on_comboBox_3(self, index): self.main_ctrl.change_comboBox_3(index)

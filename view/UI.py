@@ -60,7 +60,10 @@ class Ui_MainView(object):
         self.comboBox_2.addItem("")
         self.comboBox_2.addItem("")
         self.comboBox_2.addItem("")
-
+        self.comboBox_3 = QtWidgets.QComboBox()
+        self.comboBox_3.setGeometry(QtCore.QRect(329, 20, 90, 31))
+        self.comboBox_3.setObjectName("comboBox_3")
+        
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
 
