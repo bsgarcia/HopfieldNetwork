@@ -6,8 +6,8 @@
 * pillow (PIL)
 * tqdm
 
-##Datas to learn
-Datas are either images or numbers, and are located in data folder. 
+##Data to learn
+Data are either images or numbers, and are located in data folder. 
 
 ##How to use it
 The hopfield network code (located in network folder) is cythonized, therefore compiling is required:
