@@ -17,7 +17,7 @@ class MainController(object):
     
     ### Widgets events ####
     #==================== synchronous update event ===============================
-    def change_pushButton(self, checked):
+    def change_pushButton(self, checked): 
         self.model.pushButton = checked
         print('DEBUG: change_pushButton called with arg value:', checked)
         
@@ -189,7 +189,7 @@ class MainController(object):
                 arr = Converter.img_to_array("data/learn_img/" + file)
                 array = np.concatenate(arr)
                 img_to_learn.append(array)
-                img_path = Converter.array_to_img([array]) 
+                img_path = Converter.array_to_img(array) 
                 path_list.append(img_path)
         
         self.learned_path = path_list.copy()
@@ -202,7 +202,7 @@ class MainController(object):
                 arr = Converter.img_to_array("data/test_img/" + file)
                 array = np.concatenate(arr)
                 img_to_present.append(array)
-                img_path = Converter.array_to_img([array])
+                img_path = Converter.array_to_img(array)
                 path_list.append(img_path)
                 
         return (img_to_learn, img_to_present, path_list)
@@ -321,12 +321,7 @@ class MainController(object):
 
     #===============================================================================
     def get_new_images(self, data):
-        path_list = []
-        for i in range(len(data)):
-            path = Converter.array_to_img(data[i])
-            path_list.append(path)
-        
-        return path_list
+        return list(Converter.array_to_img(i) for i in data)
 
     #===============================================================================
     def update_images(self, path_list, stability):
