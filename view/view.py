@@ -171,6 +171,7 @@ class MainView(QtWidgets.QMainWindow):
         if self.model.gridLayoutWidget_2: 
             self.ui.gridLayoutWidget_2 = self.model.gridLayoutWidget_2
             self.ui.gridLayout_2 = self.model.gridLayout_2
+            self.ui.gridLayoutWidget_2.setWindowTitle("Learned patterns")
             self.ui.gridLayoutWidget_2.show()
 
     #### widget signal event functions ####

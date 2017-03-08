@@ -11,10 +11,44 @@ from os import walk, getcwd
 import numpy as np
 import re
 
+
 class MainController(object):
     def __init__(self, model):
         self.model = model
+        self.info_msgbox()
+
+    #==================== info start up===============================================
+    def info_msgbox(self):
+        msgbox = QtWidgets.QMessageBox()
+        msgbox.setWindowTitle("Info")
+        msgbox.setText("The network is able to learn two types of data:\n\n"
+                       "---------------------------------------------------"
+                       "----------------------------------- \n"
+                       "Pictures\n"
+                       "---------------------------------------------------"
+                       "----------------------------------- \n"
+                       "Pictures to learn are located in data/learn_img/ \n"
+                       "Pictures to present are located in data/test_img/ \n"
+                       "---------------------------------------------------"
+                       "----------------------------------- \n\n"
+                       "---------------------------------------------------"
+                       "----------------------------------- \n"
+                       "Numbers\n"
+                       "---------------------------------------------------"
+                       "----------------------------------- \n"
+                       "Numbers to learn are located in data/numbers_to_learn.py \n"
+                       "Numbers to present are located in data/numbers_to_present.py\n"
+                       "---------------------------------------------------"
+                       "----------------------------------- \n")
+        msgbox.exec_()
     
+    #==================== error msg===============================================
+    def error_msgbox(self):
+        msgbox = QtWidgets.QMessageBox()
+        msgbox.setWindowTitle("Error")
+        msgbox.setText("No pattern learned! \nSelect images or numbers before!")
+        msgbox.exec_()
+
     ### Widgets events ####
     #==================== synchronous update event ===============================
     def change_pushButton(self, checked): 
@@ -29,10 +63,7 @@ class MainController(object):
             self.model.announce_update()
         
         except AttributeError:
-            msgbox = QtWidgets.QMessageBox()
-            msgbox.setWindowTitle("Error")
-            msgbox.setText("No pattern learned! \nSelect images or numbers before!")
-            msgbox.exec_()
+            self.error_msgbox()    
 
     #==================== asynchronous update event ===============================
     def change_pushButton_2(self, checked):
@@ -47,10 +78,7 @@ class MainController(object):
             self.model.announce_update()
         
         except AttributeError:
-            msgbox = QtWidgets.QMessageBox()
-            msgbox.setWindowTitle("Error")
-            msgbox.setText("No pattern learned! \nSelect images or numbers before!")
-            msgbox.exec_()
+            self.error_msgbox()
 
     #==================== load or reload data =====================================
     def change_pushButton_3(self, checked):
@@ -72,41 +100,13 @@ class MainController(object):
         self.model.comboBox_3 = QtWidgets.QComboBox()
         
         try:
-            if self.mode == "img":
-                self.fill_layout_with_images(
-                    self.learned_path,
-                    stability=[None for i in range(len(self.learned_path))],
-                    layout=self.model.gridLayout_2)
-                
-                self.model.gridLayout_2.addWidget(self.model.comboBox_3)
-                self.model.gridLayoutWidget_2.setStyleSheet(
-                        "border: 1px solid #5D5D5C;"
-                        "background: white")
-            else:
-                self.fill_layout_with_numbers(
-                    self.net.x_y,
-                    self.net.x_y,
-                    self.net.dataset,
-                    stability=[None for i in range(len(self.net.dataset))],
-                    layout=self.model.gridLayout_2,
-                    widget=self.model.gridLayoutWidget_2)
-            
-            _translate = QtCore.QCoreApplication.translate
-            
-            for i, pattern in enumerate(self.net.dataset):
-                self.model.comboBox_3.addItem("")
-                self.model.comboBox_3.setItemText(i, _translate("Form", 
-                                                                "{}".format(i)))
- 
+            self.show_learned_patterns()   
             self.model.announce_update()
             self.model.gridLayout_2 = None
             self.model.gridLayoutWidget_2 = None
         
         except AttributeError:
-            msgbox = QtWidgets.QMessageBox()
-            msgbox.setWindowTitle("Error")
-            msgbox.setText("No pattern learned! \nSelect images or numbers before!")
-            msgbox.exec_()
+            self.error_msgbox()
 
     #==================== force stability ==========================================
     def change_checkBox(self, state):
@@ -155,8 +155,10 @@ class MainController(object):
 
     #===============================================================================
     def load_numbers(self):
-        data_to_learn = [nb_to_learn[i].copy() for i in np.sort(list(nb_to_learn.keys()))]
-        data_to_present = [nb_to_present[i].copy() for i in np.sort(list(nb_to_present.keys()))]
+        data_to_learn = \
+                [nb_to_learn[i].copy() for i in np.sort(list(nb_to_learn.keys()))]
+        data_to_present = \
+                [nb_to_present[i].copy() for i in np.sort(list(nb_to_present.keys()))]
 
         self.init_network(data_to_learn, data_to_present)
 
@@ -337,3 +339,26 @@ class MainController(object):
 
             if i % 2 != 0 and type(itm) == PyQt5.QtWidgets.QLabel:
                 itm.setText("Stability: {}".format(stability[idx]))
+    
+    #===============================================================================
+    def show_learned_patterns(self):
+        if self.mode == "img":
+            self.fill_layout_with_images(
+                self.learned_path,
+                stability=[None for i in range(len(self.learned_path))],
+                layout=self.model.gridLayout_2)
+            
+            self.model.gridLayout_2.addWidget(self.model.comboBox_3)
+            self.model.gridLayoutWidget_2.setStyleSheet(
+                    "border: 1px solid #5D5D5C;"
+                    "background: white")
+        else:
+            self.fill_layout_with_numbers(
+                self.net.x_y,
+                self.net.x_y,
+                self.net.dataset,
+                stability=[None for i in range(len(self.net.dataset))],
+                layout=self.model.gridLayout_2,
+                widget=self.model.gridLayoutWidget_2)
+        
+ 

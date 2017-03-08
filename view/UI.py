@@ -1,12 +1,7 @@
 # -*- coding: utf-8 -*-
-
 # Form implementation generated from reading ui file 'untitled.ui'
-#
-# Created by: PyQt5 UI code generator 5.7.1
-#
-# WARNING! All changes made in this file will be lost!
-
 from PyQt5 import QtCore, QtGui, QtWidgets
+
 
 class Ui_MainView(object):
     def setupUi(self, Form):
@@ -69,7 +64,7 @@ class Ui_MainView(object):
 
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
-        Form.setWindowTitle(_translate("Form", "Form"))
+        Form.setWindowTitle(_translate("Hopfield Network", "Hopfield Network"))
         self.checkBox.setText(_translate("Form", "Force stability"))
         self.pushButton.setText(_translate("Form", "Asynchronous"))
         self.pushButton_2.setText(_translate("Form", "Synchronous"))
