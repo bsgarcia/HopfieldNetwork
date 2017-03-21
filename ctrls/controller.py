@@ -70,7 +70,6 @@ class MainController(object):
         try:
             print("TEST!!!!!!!!!!!!!!!")
             try:
-                print(self.old_matrix == self.net.w_matrix)
                 stable = self.net.asynchronous_presentation(self.model.epochs,
                                                         self.model.comboBox_2,
                                                         self.model.checkBox)
@@ -135,7 +134,7 @@ class MainController(object):
         print('DEBUG: change_pushButton_5 called with arg value:', self.model.pushButton_5)
         
         try:
-            self.net.unlearn_pattern(self.net.outputs[self.model.comboBox_3])
+            self.net.unlearn_pattern(self.net.outputs[self.model.comboBox_3], self.mode)
             self.old_matrix = self.net.w_matrix.copy() 
             self.reset_data()
             self.load_data()
@@ -185,7 +184,7 @@ class MainController(object):
         self.init_main_layout()
         
         if self.model.comboBox:
-            self.mode = "numbers"
+            self.mode = "nb"
             self.load_numbers()
         else:
             self.mode = "img"
@@ -321,7 +320,7 @@ class MainController(object):
 
     #===============================================================================
     def update(self, rows, columns, data, stability):
-        if self.mode == "numbers":
+        if self.mode == "nb":
             self.update_numbers(rows, columns, data, stability, 
                                 self.model.gridLayoutWidget)
         else:

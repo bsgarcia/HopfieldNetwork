@@ -27,6 +27,7 @@ cdef class HopfieldNetwork(object):
     cdef:
         public list dataset, outputs, f
         public int lng, x_y, epochs
+        public object unlearn_rate
         public cnp.ndarray w_matrix
     
     def __cinit__(self, data_to_learn, data_to_present, epochs=1):
@@ -37,6 +38,7 @@ cdef class HopfieldNetwork(object):
         self.epochs = epochs                    #number of presentations
         self.w_matrix = None                  #weights matrices
         self.f = [f1, f2, f3]
+        self.unlearn_rate = {"img": 0.0001,"nb": 0.01}
         
         self.init_weights_matrix()
    
@@ -60,12 +62,12 @@ cdef class HopfieldNetwork(object):
         self.w_matrix /= self.lng
 
 #------------------------------------------------------------------------------------------#
-    def unlearn_pattern(self, pattern):
+    def unlearn_pattern(self, pattern, mode):
         cdef:
-            cnp.ndarray v 
+            cnp.ndarray v
 
         v = np.array(pattern).reshape(1, self.lng) 
-        self.w_matrix -= (v * v.T) * 0
+        self.w_matrix -= (v * v.T) * self.unlearn_rate["{}".format(mode)]
 
         for x in range(self.w_matrix.shape[0]):
             for y in range(self.w_matrix.shape[1]):
