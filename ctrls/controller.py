@@ -7,7 +7,8 @@ from network.c_hopfield import HopfieldNetwork
 from data.numbers_to_learn import nb_to_learn
 from data.numbers_to_present import nb_to_present
 from module.convert import Converter
-from os import walk, getcwd, path
+from os import walk, getcwd, path, mkdir, remove
+from PIL.ImageQt import ImageQt
 import numpy as np
 import re
 
@@ -68,20 +69,11 @@ class MainController(object):
         print('DEBUG: change_pushButton called with arg value:', checked)
         
         try:
-            print("TEST!!!!!!!!!!!!!!!")
-            try:
-                stable = self.net.asynchronous_presentation(self.model.epochs,
+            stable = self.net.asynchronous_presentation(self.model.epochs,
                                                         self.model.comboBox_2,
                                                         self.model.checkBox)
-                self.update(self.net.x_y, self.net.x_y, self.net.outputs, stable)
-                self.model.announce_update()
-        
-            except:
-                stable = self.net.asynchronous_presentation(self.model.epochs,
-                                                        self.model.comboBox_2,
-                                                        self.model.checkBox)
-                self.update(self.net.x_y, self.net.x_y, self.net.outputs, stable)
-                self.model.announce_update()
+            self.update(self.net.x_y, self.net.x_y, self.net.outputs, stable)
+            self.model.announce_update()
         
         except AttributeError:
             self.error_msgbox()    
@@ -198,7 +190,7 @@ class MainController(object):
                 [nb_to_present[i].copy() for i in np.sort(list(nb_to_present.keys()))]
 
         self.init_network(data_to_learn, data_to_present)
-        self.model.pattern_to_present = self.net.outputs
+        self.model.nb_pattern_to_present = len(self.net.outputs)
         
         self.fill_layout_with_numbers(
             self.net.x_y,
@@ -220,34 +212,34 @@ class MainController(object):
         
     #===============================================================================
     def import_images(self):
-        #load img to learn and store path in order to show them if 
+        #load img to learn in case  
         #learned patterns event is called
-        path_list = []
+        img_list = []
         img_to_learn = []
         for root, dirs, files in walk("data/learn_img/"):
             for file in sorted(files):
                 arr = Converter.img_to_array("data/learn_img/" + file)
                 array = np.concatenate(arr)
                 img_to_learn.append(array)
-                img_path = Converter.array_to_img(array) 
-                path_list.append(img_path)
+                img = Converter.array_to_img(array) 
+                img_list.append(img)
         
-        self.learned_path = path_list.copy()
-        
+        self.learned_img = img_list.copy()
+
         #load img to test + img to print in main window
-        path_list = []
+        img_list = []
         img_to_present = []
         for root, dirs, files in walk("data/test_img/"):
             for file in sorted(files):
                 arr = Converter.img_to_array("data/test_img/" + file)
                 array = np.concatenate(arr)
                 img_to_present.append(array)
-                img_path = Converter.array_to_img(array)
-                path_list.append(img_path)
+                img = Converter.array_to_img(array)
+                img_list.append(img)
         
-        self.model.pattern_to_present = img_to_present.copy()
+        self.model.nb_pattern_to_present = len(img_to_present)
         
-        return (img_to_learn, img_to_present, path_list)
+        return (img_to_learn, img_to_present, img_list)
 
     #===============================================================================
     def init_network(self, data_to_learn, data_to_present):
@@ -309,9 +301,9 @@ class MainController(object):
 
         for i in range(len(data)):
             img.append(QtWidgets.QLabel())
-            img[i].setPixmap(
-                    QtGui.QPixmap(getcwd() + "/" + data[i]).scaled(200, 250))
             
+            img[i].setPixmap(QtGui.QPixmap.fromImage(data[i]).scaled(200, 250))
+
             text.append(QtWidgets.QLabel())
             text[i].setText("Pattern {}\nStability: {}".format(i, stability[i]))
 
@@ -324,8 +316,8 @@ class MainController(object):
             self.update_numbers(rows, columns, data, stability, 
                                 self.model.gridLayoutWidget)
         else:
-            path_list = self.get_new_images(data)
-            self.update_images(path_list, stability)
+            img_list = self.get_new_images(data)
+            self.update_images(img_list, stability)
 
     #===============================================================================
     def update_numbers(self, rows, columns, data, stability, widget):
@@ -366,16 +358,15 @@ class MainController(object):
         return list(Converter.array_to_img(i) for i in data)
 
     #===============================================================================
-    def update_images(self, path_list, stability):
+    def update_images(self, img_list, stability):
         i = 0
-        idx_gen = (i for i in range(len(path_list)))
+        idx_gen = (i for i in range(len(img_list)))
 
         for itm in self.model.gridLayoutWidget.children():
             i += 1
             if i % 2 == 0 and type(itm) == PyQt5.QtWidgets.QLabel:
                 idx = next(idx_gen)
-                itm.setPixmap(
-                    QtGui.QPixmap(getcwd() + "/" + path_list[idx]).scaled(200, 250))
+                itm.setPixmap(QtGui.QPixmap.fromImage(img_list[idx]).scaled(200, 250))
 
             if i % 2 != 0 and type(itm) == PyQt5.QtWidgets.QLabel:
                 itm.setText("Pattern {}\nStability: {}".format(idx, stability[idx]))
@@ -384,8 +375,8 @@ class MainController(object):
     def show_learned_patterns(self):
         if self.mode == "img":
             self.fill_layout_with_images(
-                self.learned_path,
-                stability=[None for i in range(len(self.learned_path))],
+                self.learned_img,
+                stability=[None for i in range(len(self.learned_img))],
                 layout=self.model.gridLayout_2)
             
             self.model.gridLayoutWidget_2.setStyleSheet(

@@ -175,11 +175,11 @@ class MainView(QtWidgets.QMainWindow):
         self.ui.gridLayoutWidget.update()
         self.ui.gridLayoutWidget.show()
         if self.model.gridLayoutWidget_2: self.show_learned_patterns()
-        if self.model.pattern_to_present: self.update_unlearn_comboBox()
+        if self.model.nb_pattern_to_present: self.update_unlearn_comboBox()
     
     def update_unlearn_comboBox(self):
         self.ui.comboBox_3.clear()
-        for itm in range(len(self.model.pattern_to_present)):
+        for itm in range(self.model.nb_pattern_to_present):
             self.ui.comboBox_3.addItem("")
             self.ui.comboBox_3.setItemText(itm, "Pattern " + str(itm))
 

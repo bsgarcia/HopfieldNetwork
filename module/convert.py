@@ -1,4 +1,4 @@
-from PIL import Image
+from PIL import Image, ImageQt
 import numpy as np
 import time
 
@@ -21,7 +21,7 @@ class Converter(object):
         return x
     
     @staticmethod
-    def array_to_img(image, outFile=None):
+    def array_to_img(image):
         """Convert Numpy array to Image file"""
         
         data = np.reshape(image, Converter.size[::-1])
@@ -29,16 +29,11 @@ class Converter(object):
         y[data == 1] = 255
         y[data == -1] = 0
         img = Image.fromarray(y, mode="L")
-            
-        if outFile is None:
-            path = Converter.path + time.strftime(
-                "%d_%B_%Y_%H_%M_%S_{}.jpg".format(np.random.randint(10000)))
-            img.save(path)
-            return path
-             
-        else:
-            img.save(outFile)
+        path = Converter.path + "output.jpg"
+        img.save(path)
         
+        return ImageQt.ImageQt(path)
+             
 if __name__ == '__main__':
     array = Converter.img_to_array("./inputs_img/cryingpeter.jpg")
     Converter.array_to_img(array)

@@ -21,7 +21,6 @@ And then:
     $ python main.py
 
 ##GUI screenshot
-![learning pictures](http://i.imgur.com/iSYbLDg.png =200x150)
 
 
 
