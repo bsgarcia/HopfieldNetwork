@@ -7,7 +7,7 @@ from network.c_hopfield import HopfieldNetwork
 from data.numbers_to_learn import nb_to_learn
 from data.numbers_to_present import nb_to_present
 from module.convert import Converter
-from os import walk, getcwd
+from os import walk, getcwd, path
 import numpy as np
 import re
 
@@ -15,7 +15,8 @@ import re
 class MainController(object):
     def __init__(self, model):
         self.model = model
-        self.info_msgbox()
+        if not path.isdir(".dont_show"):
+            self.info_msgbox()
 
     #==================== info start up===============================================
     def info_msgbox(self):
@@ -40,13 +41,24 @@ class MainController(object):
                        "Numbers to present are located in data/numbers_to_present.py\n"
                        "---------------------------------------------------"
                        "----------------------------------- \n")
+        
+        dont_show = msgbox.addButton("Don't show this\nmessage anymore", 
+                                    QtWidgets.QMessageBox.ActionRole)
+        ok = msgbox.addButton("Ok", QtWidgets.QMessageBox.ActionRole)
+
         msgbox.exec_()
-    
+        
+        if msgbox.clickedButton() == dont_show:
+            from os import mkdir
+            mkdir(".dont_show")
+        else:
+            pass
+
     #==================== error msg===============================================
     def error_msgbox(self):
         msgbox = QtWidgets.QMessageBox()
         msgbox.setWindowTitle("Error")
-        msgbox.setText("No pattern learned! \nSelect images or numbers before!")
+        msgbox.setText("No pattern in memory! \nSelect images or numbers before!")
         msgbox.exec_()
 
     ### Widgets events ####
@@ -56,11 +68,21 @@ class MainController(object):
         print('DEBUG: change_pushButton called with arg value:', checked)
         
         try:
-            stable = self.net.asynchronous_presentation(self.model.epochs,
+            print("TEST!!!!!!!!!!!!!!!")
+            try:
+                print(self.old_matrix == self.net.w_matrix)
+                stable = self.net.asynchronous_presentation(self.model.epochs,
                                                         self.model.comboBox_2,
                                                         self.model.checkBox)
-            self.update(self.net.x_y, self.net.x_y, self.net.outputs, stable)
-            self.model.announce_update()
+                self.update(self.net.x_y, self.net.x_y, self.net.outputs, stable)
+                self.model.announce_update()
+        
+            except:
+                stable = self.net.asynchronous_presentation(self.model.epochs,
+                                                        self.model.comboBox_2,
+                                                        self.model.checkBox)
+                self.update(self.net.x_y, self.net.x_y, self.net.outputs, stable)
+                self.model.announce_update()
         
         except AttributeError:
             self.error_msgbox()    
@@ -97,7 +119,6 @@ class MainController(object):
         
         self.model.gridLayoutWidget_2 = QtWidgets.QWidget()
         self.model.gridLayout_2 = QtWidgets.QGridLayout(self.model.gridLayoutWidget_2)
-        self.model.comboBox_3 = QtWidgets.QComboBox()
         
         try:
             self.show_learned_patterns()   
@@ -108,6 +129,23 @@ class MainController(object):
         except AttributeError:
             self.error_msgbox()
 
+    #==================== unlearn button  ==========================================
+    def change_pushButton_5(self, checked):
+        self.model.pushButton_5 = checked
+        print('DEBUG: change_pushButton_5 called with arg value:', self.model.pushButton_5)
+        
+        try:
+            self.net.unlearn_pattern(self.net.outputs[self.model.comboBox_3])
+            self.old_matrix = self.net.w_matrix.copy() 
+            self.reset_data()
+            self.load_data()
+            self.net.w_matrix = self.old_matrix.copy()
+            
+            self.model.announce_update()
+        
+        except AttributeError:
+            self.error_msgbox()
+            
     #==================== force stability ==========================================
     def change_checkBox(self, state):
         self.model.checkBox = not self.model.checkBox 
@@ -161,7 +199,8 @@ class MainController(object):
                 [nb_to_present[i].copy() for i in np.sort(list(nb_to_present.keys()))]
 
         self.init_network(data_to_learn, data_to_present)
-
+        self.model.pattern_to_present = self.net.outputs
+        
         self.fill_layout_with_numbers(
             self.net.x_y,
             self.net.x_y,
@@ -206,7 +245,9 @@ class MainController(object):
                 img_to_present.append(array)
                 img_path = Converter.array_to_img(array)
                 path_list.append(img_path)
-                
+        
+        self.model.pattern_to_present = img_to_present.copy()
+        
         return (img_to_learn, img_to_present, path_list)
 
     #===============================================================================
@@ -227,9 +268,9 @@ class MainController(object):
     def fill_layout_with_numbers(self, columns, rows, data, stability, layout, widget):
         table = []
         text =  []
-        table_size = 9
+        table_size = 15
         colors = {
-            "blue": QtGui.QColor(0, 51, 51),
+            "blue": QtGui.QColor(36, 110, 189),
             "white": QtGui.QColor(255, 255, 255)
         }
 
@@ -253,7 +294,7 @@ class MainController(object):
                     table[i].setItem(row, column, item)
 
             text.append(QtWidgets.QLabel())
-            text[i].setText("Stability: {}".format(stability[i]))
+            text[i].setText("Pattern {}\nStability: {}".format(i, stability[i]))
 
             layout.addWidget(table[i], coordinates[i][0],coordinates[i][1])
             layout.addWidget(text[i], coordinates[i][0], coordinates[i][1])
@@ -273,7 +314,7 @@ class MainController(object):
                     QtGui.QPixmap(getcwd() + "/" + data[i]).scaled(200, 250))
             
             text.append(QtWidgets.QLabel())
-            text[i].setText("Stability: {}".format(stability[i]))
+            text[i].setText("Pattern {}\nStability: {}".format(i, stability[i]))
 
             layout.addWidget(img[i], coord_img[i][0],coord_img[i][1])
             layout.addWidget(text[i], coord_text[i][0], coord_text[i][1])
@@ -291,7 +332,7 @@ class MainController(object):
     def update_numbers(self, rows, columns, data, stability, widget):
         idx_gen = (i for i in range(len(data)))
         colors = {
-            "blue": QtGui.QColor(0, 51, 51),
+            "blue": QtGui.QColor(36, 110, 189),
             "white": QtGui.QColor(255, 255, 255)
         }
 
@@ -319,7 +360,7 @@ class MainController(object):
                              coordinates[1]).setBackground(colors["blue"])
 
             elif type(itm) == PyQt5.QtWidgets.QLabel:
-                itm.setText("Stability: {}".format(stability[idx]))
+                itm.setText("Pattern {}\nStability: {}".format(idx, stability[idx]))
 
     #===============================================================================
     def get_new_images(self, data):
@@ -338,7 +379,7 @@ class MainController(object):
                     QtGui.QPixmap(getcwd() + "/" + path_list[idx]).scaled(200, 250))
 
             if i % 2 != 0 and type(itm) == PyQt5.QtWidgets.QLabel:
-                itm.setText("Stability: {}".format(stability[idx]))
+                itm.setText("Pattern {}\nStability: {}".format(idx, stability[idx]))
     
     #===============================================================================
     def show_learned_patterns(self):
@@ -348,7 +389,6 @@ class MainController(object):
                 stability=[None for i in range(len(self.learned_path))],
                 layout=self.model.gridLayout_2)
             
-            self.model.gridLayout_2.addWidget(self.model.comboBox_3)
             self.model.gridLayoutWidget_2.setStyleSheet(
                     "border: 1px solid #5D5D5C;"
                     "background: white")

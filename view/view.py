@@ -32,6 +32,12 @@ class MainView(QtWidgets.QMainWindow):
     def pushButton_4(self, value):
         self.ui.pushButton_4.setChecked(value)
     @property
+    def pushButton_5(self):
+        return self.ui.pushButton_5.isChecked()
+    @pushButton_5.setter
+    def pushButton_4(self, value):
+        self.ui.pushButton_5.setChecked(value)
+    @property
     def checkBox(self):
         return self.ui.checkBox.isChecked()
     @checkBox.setter
@@ -150,6 +156,7 @@ class MainView(QtWidgets.QMainWindow):
         self.ui.pushButton_2.clicked.connect(self.on_pushButton_2)
         self.ui.pushButton_3.clicked.connect(self.on_pushButton_3)
         self.ui.pushButton_4.clicked.connect(self.on_pushButton_4)
+        self.ui.pushButton_5.clicked.connect(self.on_pushButton_5)
         self.ui.checkBox.stateChanged.connect(self.on_checkBox)
         self.ui.epochs.valueChanged.connect(self.on_epochs)
         self.ui.comboBox.currentIndexChanged.connect(self.on_comboBox)
@@ -164,21 +171,30 @@ class MainView(QtWidgets.QMainWindow):
         self.ui.gridLayoutWidget.setVisible(False)
         self.ui.gridLayoutWidget = self.model.gridLayoutWidget
         self.ui.gridLayoutWidget.setParent(self)
-        self.ui.gridLayoutWidget.setGeometry(QtCore.QRect(19, 79, 900, 600))
+        self.ui.gridLayoutWidget.setGeometry(QtCore.QRect(19, 79, 1040, 600))
         self.ui.gridLayoutWidget.update()
         self.ui.gridLayoutWidget.show()
-        
-        if self.model.gridLayoutWidget_2: 
-            self.ui.gridLayoutWidget_2 = self.model.gridLayoutWidget_2
-            self.ui.gridLayout_2 = self.model.gridLayout_2
-            self.ui.gridLayoutWidget_2.setWindowTitle("Learned patterns")
-            self.ui.gridLayoutWidget_2.show()
+        if self.model.gridLayoutWidget_2: self.show_learned_patterns()
+        if self.model.pattern_to_present: self.update_unlearn_comboBox()
+    
+    def update_unlearn_comboBox(self):
+        self.ui.comboBox_3.clear()
+        for itm in range(len(self.model.pattern_to_present)):
+            self.ui.comboBox_3.addItem("")
+            self.ui.comboBox_3.setItemText(itm, "Pattern " + str(itm))
+
+    def show_learned_patterns(self):
+        self.ui.gridLayoutWidget_2 = self.model.gridLayoutWidget_2
+        self.ui.gridLayout_2 = self.model.gridLayout_2
+        self.ui.gridLayoutWidget_2.setWindowTitle("Learned patterns")
+        self.ui.gridLayoutWidget_2.show()
 
     #### widget signal event functions ####
     def on_pushButton(self): self.main_ctrl.change_pushButton(self.pushButton)
     def on_pushButton_2(self): self.main_ctrl.change_pushButton_2(self.pushButton_2)
     def on_pushButton_3(self): self.main_ctrl.change_pushButton_3(self.pushButton_3)
     def on_pushButton_4(self): self.main_ctrl.change_pushButton_4(self.pushButton_4)
+    def on_pushButton_5(self): self.main_ctrl.change_pushButton_5(self.pushButton_5)
     def on_checkBox(self, state): self.main_ctrl.change_checkBox(state)
     def on_epochs(self, value): self.main_ctrl.change_epochs(value)
     def on_comboBox(self, index): self.main_ctrl.change_comboBox(index)

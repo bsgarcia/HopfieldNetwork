@@ -35,7 +35,7 @@ cdef class HopfieldNetwork(object):
         self.lng = len(data_to_learn[0])              #length of a single matrix 
         self.x_y = int(np.sqrt(self.lng))
         self.epochs = epochs                    #number of presentations
-        self.w_matrix = None                    #weights matrices
+        self.w_matrix = None                  #weights matrices
         self.f = [f1, f2, f3]
         
         self.init_weights_matrix()
@@ -51,8 +51,6 @@ cdef class HopfieldNetwork(object):
         for data in self.dataset.copy():
             v = np.array(data).reshape(1, self.lng)
             self.w_matrix += v * v.T
-            print("_"*5, data, "_"*5)
-            print(self.w_matrix)
         
         for x in range(self.w_matrix.shape[0]):
             for y in range(self.w_matrix.shape[1]):
@@ -67,7 +65,14 @@ cdef class HopfieldNetwork(object):
             cnp.ndarray v 
 
         v = np.array(pattern).reshape(1, self.lng) 
-        self.w_matrix -= v * v.T
+        self.w_matrix -= (v * v.T) * 0
+
+        for x in range(self.w_matrix.shape[0]):
+            for y in range(self.w_matrix.shape[1]):
+                if x == y:
+                    self.w_matrix[x][y] = 0
+        
+        self.w_matrix /= self.lng
 
 #------------------------------------------------------------------------------------------#
     def synchronous_presentation(self, int epochs, int f_id, bint force_stability):
@@ -75,7 +80,7 @@ cdef class HopfieldNetwork(object):
         cdef:
             cnp.ndarray stable, inputs, outputs
 
-        stable = np.zeros(len(self.outputs))
+        stable = np.zeros(len(self.outputs), dtype=object)
         
         while True:
             for t in range(epochs):
@@ -87,7 +92,7 @@ cdef class HopfieldNetwork(object):
                     for j in tqdm(range(len(outputs))):
                         self.outputs[i][j] = self.f[f_id](outputs[j], inputs[j])
                  
-                    stable[i] = np.all(np.sign(outputs) == np.sign(inputs)) 
+                    stable[i] = np.all(np.sign(outputs) == np.sign(inputs))
             
                     print("Item number {} is done!".format(i))
             
@@ -105,7 +110,7 @@ cdef class HopfieldNetwork(object):
         cdef:
             cnp.ndarray stable, inputs, outputs, randomized
 
-        stable = np.zeros(len(self.outputs))
+        stable = np.zeros(len(self.outputs), dtype=object)
         
         while True:
             for i, data in enumerate(self.outputs):
@@ -117,7 +122,7 @@ cdef class HopfieldNetwork(object):
                     outputs = np.dot(inputs, self.w_matrix)
                     data[idx] = self.f[f_id](outputs[idx], inputs[idx])
                     
-                    stable[i] = np.all(np.sign(outputs) == np.sign(inputs)) 
+                    stable[i] = np.all(np.sign(outputs) == np.sign(inputs))
                     
                 print("Item number {} is done!".format(i))
             

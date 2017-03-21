@@ -6,7 +6,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainView(object):
     def setupUi(self, Form):
         Form.setObjectName("Hopfield network")
-        Form.resize(950, 690)
+        Form.resize(1090, 690)
         self.checkBox = QtWidgets.QCheckBox(Form)
         self.checkBox.setGeometry(QtCore.QRect(565, 30, 131, 20))
         self.checkBox.setObjectName("checkBox")
@@ -31,7 +31,7 @@ class Ui_MainView(object):
         self.label.setGeometry(QtCore.QRect(435, 30, 61, 20))
         self.label.setObjectName("label")
         self.gridLayoutWidget = QtWidgets.QWidget(Form)
-        self.gridLayoutWidget.setGeometry(QtCore.QRect(19, 79, 920, 600))
+        self.gridLayoutWidget.setGeometry(QtCore.QRect(19, 79, 1040, 600))
         self.gridLayoutWidget.setObjectName("gridLayoutWidget")
         self.gridLayoutWidget.setStyleSheet("border: 1px solid #5D5D5C;"
                                             "background: white")
@@ -50,15 +50,19 @@ class Ui_MainView(object):
         self.comboBox.addItem("")
         self.comboBox.addItem("")
         self.comboBox_2 = QtWidgets.QComboBox(Form)
-        self.comboBox_2.setGeometry(QtCore.QRect(329, 20, 90, 31))
+        self.comboBox_2.setGeometry(QtCore.QRect(315, 20, 100, 31))
         self.comboBox_2.setObjectName("comboBox_2")
         self.comboBox_2.addItem("")
         self.comboBox_2.addItem("")
         self.comboBox_2.addItem("")
-        self.comboBox_3 = QtWidgets.QComboBox()
-        self.comboBox_3.setGeometry(QtCore.QRect(329, 20, 90, 31))
+        self.comboBox_3 = QtWidgets.QComboBox(Form)
+        self.comboBox_3.setGeometry(QtCore.QRect(930, 20, 90, 31))
         self.comboBox_3.setObjectName("comboBox_3")
-        
+        self.pushButton_5 = QtWidgets.QPushButton(Form)
+        self.pushButton_5.setGeometry(QtCore.QRect(1030, 20, 50, 31))
+        self.pushButton_5.setObjectName("pushButton_5")
+
+                
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
 
@@ -72,8 +76,9 @@ class Ui_MainView(object):
         self.label.setText(_translate("Form", "epochs:"))
         self.comboBox.setItemText(0, _translate("Form", "Images"))
         self.comboBox.setItemText(1, _translate("Form", "Numbers"))
-        self.comboBox_2.setItemText(0, _translate("Form", "f1"))
-        self.comboBox_2.setItemText(1, _translate("Form", "f2"))
-        self.comboBox_2.setItemText(2, _translate("Form", "f3"))
+        self.comboBox_2.setItemText(0, _translate("Form", "Function 1"))
+        self.comboBox_2.setItemText(1, _translate("Form", "Function 2"))
+        self.comboBox_2.setItemText(2, _translate("Form", "Function 3"))
         self.pushButton_3.setText(_translate("Form", "Load "))
+        self.pushButton_5.setText(_translate("Form", "Unlearn"))
 

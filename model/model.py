@@ -48,13 +48,14 @@ class Model():
         self.pushButton_2 = None
         self.pushButton_3 = None
         self.pushButton_4 = None
+        self.pushButton_5 = None
         self.checkBox = False
         self.label = None
         self.label_2 = None
         self.epochs = 1 
         self.comboBox = None
         self.comboBox_2 = 0 
-        self.comboBox_3 = None
+        self.comboBox_3 = 0
         self.gridLayout = None
         self.gridLayoutWidget = None
         self.gridLayout_2 = None
