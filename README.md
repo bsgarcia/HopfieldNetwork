@@ -1,5 +1,7 @@
 #Hopfield Artificial Neural Network
+
 ##Dependencies
+
 * numpy
 * PyQt5
 * cython
