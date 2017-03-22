@@ -1,5 +1,4 @@
 #Hopfield Artificial Neural Network
-
 ##Dependencies
 
 * numpy
