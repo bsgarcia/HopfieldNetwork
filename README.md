@@ -1,6 +1,6 @@
 #Hopfield Artificial Neural Network
-##Dependencies
 
+##Dependencies
 * numpy
 * PyQt5
 * cython
@@ -8,9 +8,11 @@
 * tqdm
 
 ##Data to learn
+
 Data are either images or numbers, and are located in data folder. 
 
 ##How to use it
+
 The hopfield network code (located in network folder) is cythonized, therefore compiling is required:
     
     $ cd network
