@@ -55,8 +55,6 @@ class MainController(object):
         
         if msgbox.clickedButton() == dont_show:
             mkdir(".dont_show")
-        else:
-            pass
 
     #==================== error msg===============================================
     def error_msgbox(self, text=None, title="Error"):
@@ -324,7 +322,8 @@ class MainController(object):
             "blue": QtGui.QColor(36, 110, 189),
             "white": QtGui.QColor(255, 255, 255)
         }
-
+        stab = stability
+        sim = self.net.compute_similarity() 
         coordinates = [(x, y) for x in range(2) for y in range(5)]
 
         #fill layout with grids
@@ -345,7 +344,8 @@ class MainController(object):
                     table[i].setItem(row, column, item)
 
             text.append(QtWidgets.QLabel())
-            text[i].setText("Pattern {}\nStability: {}".format(i, stability[i]))
+            text[i].setText("Pattern {}\nStability: {}"
+                            "\nSimilarity: {}".format(i, stab[i], sim[i]))    
 
             layout.addWidget(table[i], coordinates[i][0],coordinates[i][1])
             layout.addWidget(text[i], coordinates[i][0], coordinates[i][1])
@@ -358,6 +358,8 @@ class MainController(object):
         text = []
         coord_img = [(x, y) for x in range(0, 5, 2) for y in range(0, 8, 2)]
         coord_text = [(x, y) for x in range(1, 6, 2) for y in range(0, 8, 2)]
+        stab = stability
+        sim = self.net.compute_similarity()
 
         for i in range(len(data)):
             img.append(QtWidgets.QLabel())
@@ -365,7 +367,8 @@ class MainController(object):
             img[i].setPixmap(QtGui.QPixmap.fromImage(data[i]).scaled(200, 250))
 
             text.append(QtWidgets.QLabel())
-            text[i].setText("Pattern {}\nStability: {}".format(i, stability[i]))
+            text[i].setText("Pattern {}\nStability: {}"
+                            "\nSimilarity: {}".format(i, stab[i], sim[i]))    
 
             layout.addWidget(img[i], coord_img[i][0],coord_img[i][1])
             layout.addWidget(text[i], coord_text[i][0], coord_text[i][1])
@@ -386,6 +389,8 @@ class MainController(object):
             "blue": QtGui.QColor(36, 110, 189),
             "white": QtGui.QColor(255, 255, 255)
         }
+        stab = stability
+        sim = self.net.compute_similarity() 
 
         for itm in widget.children():
             if type(itm) == PyQt5.QtWidgets.QTableWidget:
@@ -396,6 +401,7 @@ class MainController(object):
                 matrix = np.reshape(data[idx], (rows, columns))
 
                 #find coordinates
+                #if binary is checked
                 if not self.model.checkBox_2:
                     white = np.where(matrix == -1)
                     blue = np.where(matrix == 1)
@@ -415,8 +421,8 @@ class MainController(object):
                              coordinates[1]).setBackground(colors["blue"])
 
             elif type(itm) == PyQt5.QtWidgets.QLabel:
-                itm.setText("Pattern {}\nStability: {}".format(idx, stability[idx]))
-
+                itm.setText("Pattern {}\nStability: {}"
+                            "\nSimilarity: {}".format(idx, stab[idx], sim[idx]))    
     #===============================================================================
     def get_new_images(self, data):
         return list(Converter.array_to_img(i) for i in data)
@@ -425,6 +431,8 @@ class MainController(object):
     def update_images(self, img_list, stability):
         i = 0
         idx_gen = (i for i in range(len(img_list)))
+        stab = stability
+        sim = self.net.compute_similarity()
 
         for itm in self.model.gridLayoutWidget.children():
             i += 1
@@ -433,7 +441,8 @@ class MainController(object):
                 itm.setPixmap(QtGui.QPixmap.fromImage(img_list[idx]).scaled(200, 250))
 
             if i % 2 != 0 and type(itm) == PyQt5.QtWidgets.QLabel:
-                itm.setText("Pattern {}\nStability: {}".format(idx, stability[idx]))
+                itm.setText("Pattern {}\nStability: {}"
+                            "\nSimilarity: {}".format(idx, stab[idx], sim[idx]))    
     
     #===============================================================================
     def show_learned_patterns(self):

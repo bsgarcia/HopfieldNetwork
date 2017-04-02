@@ -77,7 +77,19 @@ cdef class HopfieldNetwork(object):
             self.zero_diag()
         
         self.w_matrix /= self.lng
+    
+#------------------------------------------------------------------------------------------#
+    def compute_similarity(self):
 
+        means = np.array([np.mean(
+                self.dataset[idx] == self.outputs[idx]) for idx in range(len(self.outputs))])
+        percent = [int(n * 100) for n in means]
+
+        #fix in case learned and presented nb of patterns are not the same
+        max_len = max([len(self.dataset), len(self.outputs)])
+        for i in range(max_len):percent.append("0")
+        
+        return percent
 #------------------------------------------------------------------------------------------#
     def synchronous_presentation(self, int epochs, int f_id, bint force_stability, bint binary):
         """update network in a synchronous way"""
