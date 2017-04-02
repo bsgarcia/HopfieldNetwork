@@ -9,14 +9,14 @@ from tqdm import tqdm
 
 #-----------------------||| Activation functions |||---------------------------------------#
 
-def f1(result, *state):
-    return 1 if result > 0 else -1    
+def f1(result, state, binary):
+    return 1 if result > 0 else (-1, 0)[binary]
 
-def f2(result, *state):
-    return 1 if result >= 0 else -1 
+def f2(result,  state, binary):
+    return 1 if result >= 0 else (-1, 0)[binary]
     
-def f3(result, state):
-    return 1 if result > 0 else -1 if result < 0 else state    
+def f3(result, state, binary):
+    return 1 if result > 0 else (-1, 0)[binary] if result < 0 else state    
 
 
 #-----------------------||| Hopfield network |||------------------------------------------#
@@ -26,24 +26,22 @@ cdef class HopfieldNetwork(object):
     
     cdef:
         public list dataset, outputs, f
-        public int lng, x_y, epochs
+        public int lng, x_y
         public object unlearn_rate
         public cnp.ndarray w_matrix
     
-    def __cinit__(self, data_to_learn, data_to_present, epochs=1):
+    def __cinit__(self, data_to_learn, data_to_present, zero_diag):
         self.dataset = data_to_learn           #data the network is going to learn
-        self.outputs = data_to_present
+        self.outputs = data_to_present          #data we are going to present
         self.lng = len(data_to_learn[0])              #length of a single matrix 
-        self.x_y = int(np.sqrt(self.lng))
-        self.epochs = epochs                    #number of presentations
+        self.x_y = int(np.sqrt(self.lng))           #row, columns
         self.w_matrix = None                  #weights matrices
-        self.f = [f1, f2, f3]
-        self.unlearn_rate = {"img": 0.0001,"nb": 0.01}
+        self.f = [f1, f2, f3]                   #activation functions
+        self.unlearn_rate = {"img": 0.0001,"nb": 0.01} #rate to unlearn patterns
         
-        self.init_weights_matrix()
-   
+        self.init_weights_matrix(zero_diag)
 #------------------------------------------------------------------------------------------#
-    cdef init_weights_matrix(self):
+    cdef init_weights_matrix(self, zero_diag):
         """weights matrix initialization"""
         cdef:
             cnp.ndarray v
@@ -54,30 +52,34 @@ cdef class HopfieldNetwork(object):
             v = np.array(data).reshape(1, self.lng)
             self.w_matrix += v * v.T
         
-        for x in range(self.w_matrix.shape[0]):
-            for y in range(self.w_matrix.shape[1]):
-                if x == y:
-                    self.w_matrix[x][y] = 0
+        if zero_diag:
+            self.zero_diag() 
         
         self.w_matrix /= self.lng
 
 #------------------------------------------------------------------------------------------#
-    def unlearn_pattern(self, pattern, mode):
+    def zero_diag(self):
+        for x in range(self.w_matrix.shape[0]):
+            for y in range(self.w_matrix.shape[1]):
+                if x == y:
+                    self.w_matrix[x][y] = 0
+ 
+#------------------------------------------------------------------------------------------#
+    def unlearn_pattern(self, pattern, mode, zero_diag):
         cdef:
             cnp.ndarray v
-
+        
         v = np.array(pattern).reshape(1, self.lng) 
+       
         self.w_matrix -= (v * v.T) * self.unlearn_rate["{}".format(mode)]
-
-        for x in range(self.w_matrix.shape[0]):
-            for y in range(self.w_matrix.shape[1]):
-                if x == y:
-                    self.w_matrix[x][y] = 0
+        
+        if zero_diag:
+            self.zero_diag()
         
         self.w_matrix /= self.lng
 
 #------------------------------------------------------------------------------------------#
-    def synchronous_presentation(self, int epochs, int f_id, bint force_stability):
+    def synchronous_presentation(self, int epochs, int f_id, bint force_stability, bint binary):
         """update network in a synchronous way"""
         cdef:
             cnp.ndarray stable, inputs, outputs
@@ -87,13 +89,13 @@ cdef class HopfieldNetwork(object):
         while True:
             for t in range(epochs):
                 for i, data in enumerate(self.outputs):
-                
                     inputs = np.array(data)
                     outputs = np.dot(inputs, self.w_matrix)
                 
-                    for j in tqdm(range(len(outputs))):
-                        self.outputs[i][j] = self.f[f_id](outputs[j], inputs[j])
-                 
+                    for j in range(len(outputs)):
+                        self.outputs[i][j] = self.f[f_id](outputs[j], inputs[j], binary)
+                    
+                    
                     stable[i] = np.all(np.sign(outputs) == np.sign(inputs))
             
                     print("Item number {} is done!".format(i))
@@ -103,11 +105,10 @@ cdef class HopfieldNetwork(object):
             else:
                 break
 
-
         return stable
    
 #------------------------------------------------------------------------------------------#
-    def asynchronous_presentation(self, int epochs, int f_id, bint force_stability):
+    def asynchronous_presentation(self, int epochs, int f_id, bint force_stability, bint binary):
         """update network in an asynchronous way"""
         cdef:
             cnp.ndarray stable, inputs, outputs, randomized
@@ -118,11 +119,11 @@ cdef class HopfieldNetwork(object):
             for i, data in enumerate(self.outputs):
                 randomized =  np.arange(len(data))
                 np.random.shuffle(randomized)
-
+            
                 for idx in tqdm(randomized):
                     inputs = np.array(data)
                     outputs = np.dot(inputs, self.w_matrix)
-                    data[idx] = self.f[f_id](outputs[idx], inputs[idx])
+                    data[idx] = self.f[f_id](outputs[idx], inputs[idx], binary)
                     
                     stable[i] = np.all(np.sign(outputs) == np.sign(inputs))
                     

@@ -17,7 +17,7 @@ class Converter(object):
         x = np.zeros(imgArray.shape, dtype=np.float)
         x[imgArray > threshold] = 1
         x[x == 0] = -1
-        
+         
         return x
     
     @staticmethod

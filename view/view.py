@@ -44,6 +44,18 @@ class MainView(QtWidgets.QMainWindow):
     def checkBox(self, value):
         self.ui.checkBox.setChecked(value)
     @property
+    def checkBox_2(self):
+        return self.ui.checkBox_2.isChecked()
+    @checkBox_2.setter
+    def checkBox_2(self, value):
+        self.ui.checkBox_2.setChecked(value)
+    @property
+    def checkBox_3(self):
+        return self.ui.checkBox_3.isChecked()
+    @checkBox_3.setter
+    def checkBox_2(self, value):
+        self.ui.checkBox_3.setChecked(value)
+    @property
     def label(self):
         return self.ui.label.text()
     @label.setter
@@ -99,6 +111,19 @@ class MainView(QtWidgets.QMainWindow):
     @checkBox_enabled.setter
     def checkBox_enabled(self, value):
         self.ui.checkBox.setEnabled(value)
+    @property
+    def checkBox_2_enabled(self):
+        return self.ui.checkBox_2.isEnabled()
+    @checkBox_enabled.setter
+    def checkBox_2_enabled(self, value):
+        self.ui.checkBox_2.setEnabled(value)
+    @property
+    def checkBox_3_enabled(self):
+        return self.ui.checkBox_3.isEnabled()
+    @checkBox_enabled.setter
+    def checkBox_3_enabled(self, value):
+        self.ui.checkBox_3.setEnabled(value)
+
     @property
     def label_enabled(self):
         return self.ui.label.isEnabled()
@@ -158,6 +183,8 @@ class MainView(QtWidgets.QMainWindow):
         self.ui.pushButton_4.clicked.connect(self.on_pushButton_4)
         self.ui.pushButton_5.clicked.connect(self.on_pushButton_5)
         self.ui.checkBox.stateChanged.connect(self.on_checkBox)
+        self.ui.checkBox_2.stateChanged.connect(self.on_checkBox_2)
+        self.ui.checkBox_3.stateChanged.connect(self.on_checkBox_3)
         self.ui.epochs.valueChanged.connect(self.on_epochs)
         self.ui.comboBox.currentIndexChanged.connect(self.on_comboBox)
         self.ui.comboBox_2.currentIndexChanged.connect(self.on_comboBox_2)
@@ -171,7 +198,7 @@ class MainView(QtWidgets.QMainWindow):
         self.ui.gridLayoutWidget.setVisible(False)
         self.ui.gridLayoutWidget = self.model.gridLayoutWidget
         self.ui.gridLayoutWidget.setParent(self)
-        self.ui.gridLayoutWidget.setGeometry(QtCore.QRect(19, 79, 1040, 600))
+        self.ui.gridLayoutWidget.setGeometry(QtCore.QRect(30, 79, 1050, 600))
         self.ui.gridLayoutWidget.update()
         self.ui.gridLayoutWidget.show()
         if self.model.gridLayoutWidget_2: self.show_learned_patterns()
@@ -196,6 +223,8 @@ class MainView(QtWidgets.QMainWindow):
     def on_pushButton_4(self): self.main_ctrl.change_pushButton_4(self.pushButton_4)
     def on_pushButton_5(self): self.main_ctrl.change_pushButton_5(self.pushButton_5)
     def on_checkBox(self, state): self.main_ctrl.change_checkBox(state)
+    def on_checkBox_2(self, state): self.main_ctrl.change_checkBox_2(state)
+    def on_checkBox_3(self, state): self.main_ctrl.change_checkBox_3(state)
     def on_epochs(self, value): self.main_ctrl.change_epochs(value)
     def on_comboBox(self, index): self.main_ctrl.change_comboBox(index)
     def on_comboBox_2(self, index): self.main_ctrl.change_comboBox_2(index)

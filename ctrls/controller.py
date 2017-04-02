@@ -7,7 +7,7 @@ from network.c_hopfield import HopfieldNetwork
 from data.numbers_to_learn import nb_to_learn
 from data.numbers_to_present import nb_to_present
 from module.convert import Converter
-from os import walk, getcwd, path, mkdir, remove
+from os import walk, getcwd, path, mkdir
 from PIL.ImageQt import ImageQt
 import numpy as np
 import re
@@ -16,6 +16,10 @@ import re
 class MainController(object):
     def __init__(self, model):
         self.model = model
+        self.net = None
+        self.default_error = "No pattern in memory! \n"\
+                            "Load images or numbers before!"
+
         if not path.isdir(".dont_show"):
             self.info_msgbox()
 
@@ -50,35 +54,41 @@ class MainController(object):
         msgbox.exec_()
         
         if msgbox.clickedButton() == dont_show:
-            from os import mkdir
             mkdir(".dont_show")
         else:
             pass
 
     #==================== error msg===============================================
-    def error_msgbox(self):
+    def error_msgbox(self, text=None, title="Error"):
         msgbox = QtWidgets.QMessageBox()
-        msgbox.setWindowTitle("Error")
-        msgbox.setText("No pattern in memory! \nSelect images or numbers before!")
+        msgbox.setWindowTitle(title)
+        msgbox.setText(text)
         msgbox.exec_()
 
     ### Widgets events ####
-    #==================== synchronous update event ===============================
+    #==================== asynchronous update event ===============================
     def change_pushButton(self, checked): 
         self.model.pushButton = checked
         print('DEBUG: change_pushButton called with arg value:', checked)
         
         try:
+            if self.mode == 'img':
+                text = "Caution! It could take several minutes to proceed "\
+                "because of the size of the images."
+                title = "Warning"
+                self.error_msgbox(text=text, title=title)
+
             stable = self.net.asynchronous_presentation(self.model.epochs,
                                                         self.model.comboBox_2,
-                                                        self.model.checkBox)
+                                                        self.model.checkBox,
+                                                        self.model.checkBox_2) 
             self.update(self.net.x_y, self.net.x_y, self.net.outputs, stable)
             self.model.announce_update()
         
         except AttributeError:
-            self.error_msgbox()    
+            self.error_msgbox(text=self.default_error)    
 
-    #==================== asynchronous update event ===============================
+    #==================== synchronous update event ===============================
     def change_pushButton_2(self, checked):
         self.model.pushButton_2 = checked
         print('DEBUG: change_pushButton_2 called with arg value:', checked)
@@ -86,12 +96,13 @@ class MainController(object):
         try:
             stable = self.net.synchronous_presentation(self.model.epochs,
                                                        self.model.comboBox_2,
-                                                       self.model.checkBox)
+                                                       self.model.checkBox,
+                                                       self.model.checkBox_2)
             self.update(self.net.x_y, self.net.x_y, self.net.outputs, stable)
             self.model.announce_update()
         
         except AttributeError:
-            self.error_msgbox()
+            self.error_msgbox(text=self.default_error)
 
     #==================== load or reload data =====================================
     def change_pushButton_3(self, checked):
@@ -107,7 +118,6 @@ class MainController(object):
     def change_pushButton_4(self, checked):
         self.model.pushButton_4 = checked
         print('DEBUG: change_pushButton_4 called with arg value:', checked)
-        
         self.model.gridLayoutWidget_2 = QtWidgets.QWidget()
         self.model.gridLayout_2 = QtWidgets.QGridLayout(self.model.gridLayoutWidget_2)
         
@@ -118,7 +128,7 @@ class MainController(object):
             self.model.gridLayoutWidget_2 = None
         
         except AttributeError:
-            self.error_msgbox()
+            self.error_msgbox(text=self.default_error)
 
     #==================== unlearn button  ==========================================
     def change_pushButton_5(self, checked):
@@ -126,8 +136,10 @@ class MainController(object):
         print('DEBUG: change_pushButton_5 called with arg value:', self.model.pushButton_5)
         
         try:
-            self.net.unlearn_pattern(self.net.outputs[self.model.comboBox_3], self.mode)
-            self.old_matrix = self.net.w_matrix.copy() 
+            self.net.unlearn_pattern(self.net.outputs[self.model.comboBox_3],
+                                     self.mode,
+                                     self.model.checkBox_3)
+            self.old_matrix = self.net.w_matrix.copy()
             self.reset_data()
             self.load_data()
             self.net.w_matrix = self.old_matrix.copy()
@@ -135,12 +147,35 @@ class MainController(object):
             self.model.announce_update()
         
         except AttributeError:
-            self.error_msgbox()
+            self.error_msgbox(text=self.default_error)
             
     #==================== force stability ==========================================
     def change_checkBox(self, state):
         self.model.checkBox = not self.model.checkBox 
         print('DEBUG: change_checkBox called with arg value:', self.model.checkBox)
+
+   #==================== enable binary =============================================
+    def change_checkBox_2(self, state):
+        try:
+            self.model.checkBox_2 = not self.model.checkBox_2 
+            print('DEBUG: change_checkBox_2 called with arg value:', self.model.checkBox_2)
+            
+            if self.net:
+                self.reset_data()
+                self.load_data()
+                self.model.announce_update()
+
+        except AttributeError:
+            self.error_msgbox(text=self.default_error)
+
+    #==================== set zero diagonales =======================================
+    def change_checkBox_3(self, state):
+        self.model.checkBox_3 = not self.model.checkBox_3 
+        print('DEBUG: change_checkBox_3 called with arg value:', self.model.checkBox_3)
+        if self.net:
+            self.reset_data()
+            self.load_data()
+            self.model.announce_update()
 
     #==================== number of epochs =========================================
     def change_epochs(self, value):
@@ -156,7 +191,8 @@ class MainController(object):
     def change_comboBox_2(self, index):
         self.model.comboBox_2 = index
         print('DEBUG: change_comboBox_2 called with arg value:', index)
-    
+
+        
     #====================  unlearn choice ==========================================
     def change_comboBox_3(self, index):
         self.model.comboBox_3 = index
@@ -181,15 +217,31 @@ class MainController(object):
         else:
             self.mode = "img"
             self.load_images()
+    
+    #===============================================================================
+    def use_binary(self, data_to_learn, data_to_present):
+        for data in data_to_learn: data[data == -1] = 0
+        for data in data_to_present: data[data == -1] = 0
+        self.type = "binary"
+        
+        return data_to_learn, data_to_present
 
     #===============================================================================
     def load_numbers(self):
         data_to_learn = \
-                [nb_to_learn[i].copy() for i in np.sort(list(nb_to_learn.keys()))]
+                [np.array(nb_to_learn[i]) for i in np.sort(list(nb_to_learn.keys()))]
         data_to_present = \
-                [nb_to_present[i].copy() for i in np.sort(list(nb_to_present.keys()))]
+                [np.array(nb_to_present[i]) for i in np.sort(list(nb_to_present.keys()))]
+        
+        #if binary is checked
+        if self.model.checkBox_2:
+           data_to_learn, data_to_present = \
+                   self.use_binary(data_to_learn, data_to_present)
 
         self.init_network(data_to_learn, data_to_present)
+
+        #in order to send number of pattern to the view
+        #(and print them in the unlearn widget)
         self.model.nb_pattern_to_present = len(self.net.outputs)
         
         self.fill_layout_with_numbers(
@@ -202,12 +254,18 @@ class MainController(object):
 
     #===============================================================================
     def load_images(self):
-        data = self.import_images()
-        self.init_network(data[0], data[1])
+        data_to_learn, data_to_present, img_list = self.import_images()
+        
+        #if binary is checked
+        if self.model.checkBox_2:
+           data_to_learn, data_to_present = \
+                   self.use_binary(data_to_learn, data_to_present)
+
+        self.init_network(data_to_learn, data_to_present)
         
         self.fill_layout_with_images(
-            data[2],
-            stability=[None for i in range(len(data[2]))],
+            img_list,
+            stability=[None for i in range(len(img_list))],
             layout=self.model.gridLayout)
         
     #===============================================================================
@@ -239,11 +297,13 @@ class MainController(object):
         
         self.model.nb_pattern_to_present = len(img_to_present)
         
-        return (img_to_learn, img_to_present, img_list)
+        return img_to_learn, img_to_present, img_list
 
     #===============================================================================
     def init_network(self, data_to_learn, data_to_present):
-        self.net = HopfieldNetwork(data_to_learn, data_to_present)
+        self.net = HopfieldNetwork(data_to_learn, 
+                                   data_to_present,
+                                   self.model.checkBox_3)
 
     #===============================================================================
     def init_main_layout(self):
@@ -336,9 +396,13 @@ class MainController(object):
                 matrix = np.reshape(data[idx], (rows, columns))
 
                 #find coordinates
-                white = np.where(matrix == -1)
-                blue = np.where(matrix == 1)
-                
+                if not self.model.checkBox_2:
+                    white = np.where(matrix == -1)
+                    blue = np.where(matrix == 1)
+                else:
+                    white = np.where(matrix == 0)
+                    blue = np.where(matrix == 1)
+
                 #colorize
                 for j in range(len(white[0])):
                     coordinates = (white[0][j], white[1][j])

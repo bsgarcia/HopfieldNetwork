@@ -30,6 +30,7 @@ class Model():
             ('pushButton_3', 'getboolean'),
             ('pushButton_4', 'getboolean'),
             ('checkBox', 'getboolean'),
+            ('checkBox_2', 'getboolean'),
             ('label', 'get'),
             ('label_2', 'get'),
             ('epochs', 'getint'),
@@ -50,6 +51,8 @@ class Model():
         self.pushButton_4 = None
         self.pushButton_5 = None
         self.checkBox = False
+        self.checkBox_2 = False
+        self.checkBox_3 = False
         self.label = None
         self.label_2 = None
         self.epochs = 1 
