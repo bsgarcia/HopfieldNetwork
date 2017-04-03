@@ -81,8 +81,9 @@ cdef class HopfieldNetwork(object):
 #------------------------------------------------------------------------------------------#
     def compute_similarity(self):
 
+        min_len = min([len(self.dataset), len(self.outputs)])
         means = np.array([np.mean(
-                self.dataset[idx] == self.outputs[idx]) for idx in range(len(self.outputs))])
+                self.dataset[idx] == self.outputs[idx]) for idx in range(min_len)])
         percent = [int(n * 100) for n in means]
 
         #fix in case learned and presented nb of patterns are not the same

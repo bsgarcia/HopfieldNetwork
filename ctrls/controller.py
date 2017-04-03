@@ -11,6 +11,7 @@ from os import walk, getcwd, path, mkdir
 from PIL.ImageQt import ImageQt
 import numpy as np
 import re
+import copy
 
 
 class MainController(object):
@@ -230,7 +231,7 @@ class MainController(object):
                 [np.array(nb_to_learn[i]) for i in np.sort(list(nb_to_learn.keys()))]
         data_to_present = \
                 [np.array(nb_to_present[i]) for i in np.sort(list(nb_to_present.keys()))]
-        
+         
         #if binary is checked
         if self.model.checkBox_2:
            data_to_learn, data_to_present = \
@@ -306,12 +307,10 @@ class MainController(object):
     #===============================================================================
     def init_main_layout(self):
         self.model.gridLayoutWidget = QtWidgets.QWidget()
-        self.model.gridLayout = QtWidgets.QGridLayout(
-            self.model.gridLayoutWidget)
+        self.model.gridLayout = QtWidgets.QGridLayout(self.model.gridLayoutWidget)
         if not self.model.comboBox:
-            self.model.gridLayoutWidget.setStyleSheet(
-                "border: 1px solid #5D5D5C;"
-                "background: white")
+            self.model.gridLayoutWidget.setStyleSheet("border: 1px solid #5D5D5C;"
+                                                      "background: white")
     
     #===============================================================================
     def fill_layout_with_numbers(self, columns, rows, data, stability, layout, widget):
@@ -324,7 +323,7 @@ class MainController(object):
         }
         stab = stability
         sim = self.net.compute_similarity() 
-        coordinates = [(x, y) for x in range(2) for y in range(5)]
+        coordinates = [(x, y) for x in range(3) for y in range(7)]
 
         #fill layout with grids
         for i in range(len(data)):
@@ -356,8 +355,8 @@ class MainController(object):
     def fill_layout_with_images(self, data, stability, layout):
         img = []
         text = []
-        coord_img = [(x, y) for x in range(0, 5, 2) for y in range(0, 8, 2)]
-        coord_text = [(x, y) for x in range(1, 6, 2) for y in range(0, 8, 2)]
+        coord_img = [(x, y) for x in range(0, 10, 2) for y in range(0, 8, 2)]
+        coord_text = [(x, y) for x in range(1, 12, 2) for y in range(0, 8, 2)]
         stab = stability
         sim = self.net.compute_similarity()
 
