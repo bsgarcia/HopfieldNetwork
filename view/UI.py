@@ -67,7 +67,7 @@ class Ui_MainView(object):
         self.pushButton_5.setGeometry(QtCore.QRect(1030, 20, 50, 31))
         self.pushButton_5.setObjectName("pushButton_5")
 
-                
+
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
 

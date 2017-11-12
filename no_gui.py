@@ -44,11 +44,9 @@ class Generator(object):
         return (-1, 0)[binary] if x == 1 else 1 
 
     def run(self, x_axis, diag):
-
     
         for n in tqdm(range(1, 100)):
 
-             
             #data_to_learn = \
                   [nb_to_learn[i].copy() for i in np.sort(list(nb_to_learn.keys()))]
             
@@ -75,7 +73,7 @@ class Generator(object):
             success = len(means[means == 1]) 
             self.x.append(n)
             self.y.append(success)
-    
+
     @staticmethod
     def main():
         #"p" change number of pattern

@@ -24,6 +24,6 @@ And then:
     $ python main.py
 
 ##GUI screenshot
-
+![gui](http://i.imgur.com/rqR6TUJ.png)
 
 

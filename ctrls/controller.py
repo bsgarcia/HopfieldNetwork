@@ -2,30 +2,31 @@
 # ctrls\controller.py #
 ###########################
 import PyQt5
-from PyQt5 import QtGui, QtCore, QtWidgets
+from PyQt5 import QtGui, QtWidgets
 from network.c_hopfield import HopfieldNetwork
 from data.numbers_to_learn import nb_to_learn
 from data.numbers_to_present import nb_to_present
 from module.convert import Converter
-from os import walk, getcwd, path, mkdir
-from PIL.ImageQt import ImageQt
+from os import walk, path, mkdir
 import numpy as np
-import re
-import copy
 
 
 class MainController(object):
+
     def __init__(self, model):
+
         self.model = model
         self.net = None
-        self.default_error = "No pattern in memory! \n"\
-                            "Load images or numbers before!"
+        self.default_error = "No pattern in memory! \n"
+        "Load images or numbers before!"
 
         if not path.isdir(".dont_show"):
             self.info_msgbox()
 
     #==================== info start up===============================================
+
     def info_msgbox(self):
+
         msgbox = QtWidgets.QMessageBox()
         msgbox.setWindowTitle("Info")
         msgbox.setText("The network is able to learn two types of data:\n\n"
@@ -72,7 +73,7 @@ class MainController(object):
         
         try:
             if self.mode == 'img':
-                text = "Caution! It could take several minutes to proceed "\
+                text = "Caution! It could take several minutes to proceed "
                 "because of the size of the images."
                 title = "Warning"
                 self.error_msgbox(text=text, title=title)
@@ -80,7 +81,7 @@ class MainController(object):
             stable = self.net.asynchronous_presentation(self.model.epochs,
                                                         self.model.comboBox_2,
                                                         self.model.checkBox,
-                                                        self.model.checkBox_2) 
+                                                        self.model.checkBox_2)
             self.update(self.net.x_y, self.net.x_y, self.net.outputs, stable)
             self.model.announce_update()
         
@@ -112,28 +113,30 @@ class MainController(object):
 
         self.load_data()
         self.model.announce_update()
-    
-    #==================== show learned patterns =====================================
+
+    # ==================== show learned patterns =====================================
+
     def change_pushButton_4(self, checked):
         self.model.pushButton_4 = checked
         print('DEBUG: change_pushButton_4 called with arg value:', checked)
         self.model.gridLayoutWidget_2 = QtWidgets.QWidget()
         self.model.gridLayout_2 = QtWidgets.QGridLayout(self.model.gridLayoutWidget_2)
-        
+
         try:
-            self.show_learned_patterns()   
+            self.show_learned_patterns()
             self.model.announce_update()
             self.model.gridLayout_2 = None
             self.model.gridLayoutWidget_2 = None
-        
+
         except AttributeError:
             self.error_msgbox(text=self.default_error)
 
-    #==================== unlearn button  ==========================================
+    # ==================== unlearn button  ==========================================
     def change_pushButton_5(self, checked):
+
         self.model.pushButton_5 = checked
         print('DEBUG: change_pushButton_5 called with arg value:', self.model.pushButton_5)
-        
+
         try:
             self.net.unlearn_pattern(self.net.outputs[self.model.comboBox_3],
                                      self.mode,
@@ -142,18 +145,20 @@ class MainController(object):
             self.reset_data()
             self.load_data()
             self.net.w_matrix = self.old_matrix.copy()
-            
+
             self.model.announce_update()
-        
+
         except AttributeError:
             self.error_msgbox(text=self.default_error)
-            
-    #==================== force stability ==========================================
+
+    # ==================== force stability ==========================================
+
     def change_checkBox(self, state):
         self.model.checkBox = not self.model.checkBox 
         print('DEBUG: change_checkBox called with arg value:', self.model.checkBox)
 
-   #==================== enable binary =============================================
+    # ==================== enable binary =============================================
+
     def change_checkBox_2(self, state):
         try:
             self.model.checkBox_2 = not self.model.checkBox_2 
@@ -280,7 +285,7 @@ class MainController(object):
                 img_to_learn.append(array)
                 img = Converter.array_to_img(array) 
                 img_list.append(img)
-        
+
         self.learned_img = img_list.copy()
 
         #load img to test + img to print in main window
